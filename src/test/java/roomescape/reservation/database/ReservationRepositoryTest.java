@@ -2,6 +2,7 @@ package roomescape.reservation.database;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.TestConstant;
 import roomescape.reservation.model.Reservation;
 
 import java.time.LocalDate;
@@ -14,9 +15,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationRepositoryTest {
 
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
-    private static final LocalTime FUTURE_TIME = LocalTime.now().plusMinutes(1);
-
     private ReservationRepository reservationRepository;
 
     @BeforeEach
@@ -27,7 +25,7 @@ class ReservationRepositoryTest {
     @Test
     void 예약을_저장한다() {
         // Given
-        Reservation reservation = new Reservation(null, "프리", FUTURE_DATE, FUTURE_TIME);
+        Reservation reservation = new Reservation(null, "프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
 
         // When & Then
         assertThatCode(() -> reservationRepository.save(reservation))
@@ -37,7 +35,7 @@ class ReservationRepositoryTest {
     @Test
     void 이미_저장된_예약_엔티티는_다시_저장할_수_없다() {
         // Given
-        Reservation savedReservation = reservationRepository.save(new Reservation(null, "프리", FUTURE_DATE, FUTURE_TIME));
+        Reservation savedReservation = reservationRepository.save(new Reservation(null, "프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThatThrownBy(() -> reservationRepository.save(savedReservation))
@@ -48,8 +46,8 @@ class ReservationRepositoryTest {
     @Test
     void 모든_예약_엔티티를_조회할_수_있다() {
         // Given
-        Reservation savedReservation = reservationRepository.save(new Reservation(null, "프리", FUTURE_DATE, FUTURE_TIME));
-        Reservation savedReservation2 = reservationRepository.save(new Reservation(null, "프리", FUTURE_DATE.plusDays(1), FUTURE_TIME));
+        Reservation savedReservation = reservationRepository.save(new Reservation(null, "프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        Reservation savedReservation2 = reservationRepository.save(new Reservation(null, "프리", TestConstant.FUTURE_DATE.plusDays(1), TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThat(reservationRepository.findAll())
