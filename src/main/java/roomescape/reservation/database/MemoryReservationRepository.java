@@ -1,6 +1,7 @@
 package roomescape.reservation.database;
 
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.model.Reservation;
 
 import java.util.Collections;
@@ -30,5 +31,20 @@ public class MemoryReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return Collections.unmodifiableList(reservations);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getId().equals(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Reservation reservation = reservations.stream()
+                .filter(r -> r.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ReservationDoesNotExistException("존재하지 않는 예약 id입니다."));
+        reservations.remove(reservation);
     }
 }

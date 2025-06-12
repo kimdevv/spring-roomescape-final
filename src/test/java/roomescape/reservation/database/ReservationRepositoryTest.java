@@ -51,4 +51,21 @@ class ReservationRepositoryTest {
         assertThat(reservationRepository.findAll())
                 .containsExactlyInAnyOrder(savedReservation, savedReservation2);
     }
+
+    @Test
+    void 예약이_존재하는지_검사하고_존재한다면_true를_반환한다() {
+        // Given
+        Reservation reservation = reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+
+        // When & Then
+        assertThat(reservationRepository.existsById(reservation.getId())).isTrue();
+    }
+
+    @Test
+    void 예약이_존재하는지_검사하고_존재하지_않는다면_false를_반환한다() {
+        // Given
+        // When
+        // Then
+        assertThat(reservationRepository.existsById(Long.MAX_VALUE)).isFalse();
+    }
 }

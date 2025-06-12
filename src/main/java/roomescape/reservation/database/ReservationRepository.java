@@ -9,4 +9,8 @@ public interface ReservationRepository {
     public Reservation save(Reservation reservation);
 
     public List<Reservation> findAll();
+
+    boolean existsById(Long id);
+
+    void deleteById(Long id);
 }
