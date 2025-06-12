@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.TestConstant;
 import roomescape.reservation.model.Reservation;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +23,7 @@ class ReservationRepositoryTest {
     @Test
     void 예약을_저장한다() {
         // Given
-        Reservation reservation = new Reservation("프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
+        Reservation reservation = new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
 
         // When & Then
         assertThatCode(() -> reservationRepository.save(reservation))
@@ -35,7 +33,7 @@ class ReservationRepositoryTest {
     @Test
     void 이미_저장된_예약_엔티티는_다시_저장할_수_없다() {
         // Given
-        Reservation savedReservation = reservationRepository.save(new Reservation("프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        Reservation savedReservation = reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThatThrownBy(() -> reservationRepository.save(savedReservation))
@@ -46,8 +44,8 @@ class ReservationRepositoryTest {
     @Test
     void 모든_예약_엔티티를_조회할_수_있다() {
         // Given
-        Reservation savedReservation = reservationRepository.save(new Reservation("프리", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
-        Reservation savedReservation2 = reservationRepository.save(new Reservation("프리", TestConstant.FUTURE_DATE.plusDays(1), TestConstant.FUTURE_TIME));
+        Reservation savedReservation = reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        Reservation savedReservation2 = reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE.plusDays(1), TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThat(reservationRepository.findAll())

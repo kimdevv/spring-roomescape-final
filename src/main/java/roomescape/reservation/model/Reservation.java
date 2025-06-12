@@ -31,11 +31,27 @@ public class Reservation {
 
     private void validateIdNull(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Id값은 null이 될 수 없습니다.");
+            throw new IllegalArgumentException("id값은 null이 될 수 없습니다.");
         }
     }
 
     public boolean isIdNull() {
         return id == null;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public LocalTime getTime() {
+        return time;
     }
 }
