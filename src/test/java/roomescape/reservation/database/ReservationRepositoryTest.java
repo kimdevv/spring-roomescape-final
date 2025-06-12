@@ -1,24 +1,21 @@
 package roomescape.reservation.database;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.TestConstant;
 import roomescape.reservation.model.Reservation;
-
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DataJpaTest
 class ReservationRepositoryTest {
 
+    @Autowired
     private ReservationRepository reservationRepository;
-
-    @BeforeEach
-    void setUp() {
-        reservationRepository = new MemoryReservationRepository(new ArrayList<>());
-    }
 
     @Test
     void 예약을_저장한다() {
@@ -33,12 +30,11 @@ class ReservationRepositoryTest {
     @Test
     void 이미_저장된_예약_엔티티는_다시_저장할_수_없다() {
         // Given
-        Reservation savedReservation = reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
 
         // When & Then
-        assertThatThrownBy(() -> reservationRepository.save(savedReservation))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 DB에 저장되어 있는 엔티티입니다.");
+        assertThatThrownBy(() -> reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME)))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

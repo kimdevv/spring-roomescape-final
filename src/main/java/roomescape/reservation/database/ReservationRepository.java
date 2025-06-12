@@ -1,16 +1,11 @@
 package roomescape.reservation.database;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import roomescape.reservation.model.Reservation;
 
 import java.util.List;
 
-public interface ReservationRepository {
-
-    public Reservation save(Reservation reservation);
-
-    public List<Reservation> findAll();
-
-    boolean existsById(Long id);
-
-    void deleteById(Long id);
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 }
