@@ -28,4 +28,10 @@ public class ReservationTimeController {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(requestBody.startAt()));
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTime);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+        reservationTimeService.deleteReservationTimeById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
