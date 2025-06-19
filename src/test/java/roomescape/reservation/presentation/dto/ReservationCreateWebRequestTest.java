@@ -3,18 +3,18 @@ package roomescape.reservation.presentation.dto;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.TestConstant;
-import roomescape.reservation.presentation.dto.request.ReservationCreateRequest;
+import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ReservationCreateRequestTest {
+class ReservationCreateWebRequestTest {
 
     @Test
     void 이름은_null이_될_수_없다() {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest(null, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
+        assertThatThrownBy(() -> new ReservationCreateWebRequest(null, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 null이 될 수 없습니다.");
     }
@@ -24,7 +24,7 @@ class ReservationCreateRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest("   ", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
+        assertThatThrownBy(() -> new ReservationCreateWebRequest("   ", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 빈 값이 될 수 없습니다.");
     }
@@ -35,10 +35,10 @@ class ReservationCreateRequestTest {
         // When
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, null, TestConstant.FUTURE_TIME))
+            assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, null, TestConstant.FUTURE_TIME))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
-            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, null))
+            assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
         });

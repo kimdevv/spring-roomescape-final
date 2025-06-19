@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.business.ReservationService;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.presentation.dto.request.ReservationCreateRequest;
+import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateRequest requestBody) {
+    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateWebRequest requestBody) {
         Reservation reservation = reservationService.createReservation(requestBody);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }

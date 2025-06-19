@@ -3,9 +3,9 @@ package roomescape.reservation.presentation.dto.request;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record ReservationCreateRequest(String name, LocalDate date, LocalTime time) {
+public record ReservationCreateWebRequest(String name, LocalDate date, LocalTime time) {
 
-    public ReservationCreateRequest {
+    public ReservationCreateWebRequest {
         validateName(name);
         validateDateTime(date, time);
     }

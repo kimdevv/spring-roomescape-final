@@ -6,7 +6,7 @@ import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.exception.DuplicatedReservationException;
 import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.presentation.dto.request.ReservationCreateRequest;
+import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,11 +21,11 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation createReservation(ReservationCreateRequest reservationCreateRequest) {
-        LocalDate date = reservationCreateRequest.date();
-        LocalTime time = reservationCreateRequest.time();
+    public Reservation createReservation(ReservationCreateWebRequest reservationCreateWebRequest) {
+        LocalDate date = reservationCreateWebRequest.date();
+        LocalTime time = reservationCreateWebRequest.time();
         validateDuplicatedDateAndTime(date, time);
-        return reservationRepository.save(new Reservation(reservationCreateRequest.name(), reservationCreateRequest.date(), reservationCreateRequest.time()));
+        return reservationRepository.save(new Reservation(reservationCreateWebRequest.name(), reservationCreateWebRequest.date(), reservationCreateWebRequest.time()));
     }
 
     private void validateDuplicatedDateAndTime(LocalDate date, LocalTime time) {
