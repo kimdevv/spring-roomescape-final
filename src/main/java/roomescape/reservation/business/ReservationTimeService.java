@@ -9,6 +9,7 @@ import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
 import roomescape.reservation.model.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -30,6 +31,10 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new DuplicatedReservationTimeException("이미 해당 시간은 등록되어 있습니다.");
         }
+    }
+
+    public List<ReservationTime> findAllReservationTimes() {
+        return reservationTimeRepository.findAll();
     }
 
     @Transactional
