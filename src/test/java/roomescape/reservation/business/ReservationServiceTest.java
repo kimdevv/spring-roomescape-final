@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
+import roomescape.reservation.exception.DuplicatedReservationException;
 import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.presentation.dto.request.ReservationCreateRequest;
@@ -14,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@Transactional
 class ReservationServiceTest {
 
     @Autowired
@@ -35,6 +38,17 @@ class ReservationServiceTest {
             softAssertions.assertThat(createdReservation.getDate()).isEqualTo(TestConstant.FUTURE_DATE);
             softAssertions.assertThat(createdReservation.getTime()).isEqualTo(TestConstant.FUTURE_TIME);
         });
+    }
+
+    @Test
+    void 이미_예약이_등록된_시각에_중복으로_예약을_등록할_수_없다() {
+        // Given
+        reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME2, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME)))
+                .isInstanceOf(DuplicatedReservationException.class)
+                .hasMessage("중복된 시각에는 예약할 수 없습니다.");
     }
 
     @Test
