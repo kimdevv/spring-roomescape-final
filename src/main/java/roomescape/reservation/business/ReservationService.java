@@ -21,6 +21,7 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public Reservation createReservation(ReservationCreateRequest reservationCreateRequest) {
         LocalDate date = reservationCreateRequest.date();
         LocalTime time = reservationCreateRequest.time();
