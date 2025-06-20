@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedThemeException;
+import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Theme;
 
 import java.util.List;
@@ -31,5 +32,13 @@ public class ThemeService {
 
     public List<Theme> findAllThemes() {
         return themeRepository.findAll();
+    }
+
+    public void deleteThemeById(Long id) {
+        if (themeRepository.existsById(id)) {
+            themeRepository.deleteById(id);
+            return;
+        }
+        throw new ThemeDoesNotExistException("존재하지 않는 테마 id입니다.");
     }
 }
