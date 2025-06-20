@@ -5,11 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.database.ReservationTimeRepository;
+import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedReservationException;
 import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
+import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
+import roomescape.reservation.model.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,25 +22,30 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public Reservation createReservation(ReservationCreateRequest reservationCreateRequest) {
         LocalDate date = reservationCreateRequest.date();
         Long timeId = reservationCreateRequest.timeId();
-        validateDuplicatedDateAndTime(date, timeId);
+        Long themeId = reservationCreateRequest.themeId();
+        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId);
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
-        return reservationRepository.save(new Reservation(reservationCreateRequest.name(), date, time));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
+        return reservationRepository.save(new Reservation(reservationCreateRequest.name(), date, time, theme));
     }
 
-    private void validateDuplicatedDateAndTime(LocalDate date, Long timeId) {
-        if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
-            throw new DuplicatedReservationException("중복된 시각에는 예약할 수 없습니다.");
+    private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new DuplicatedReservationException("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
         }
     }
 

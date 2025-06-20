@@ -5,10 +5,9 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.model.Reservation;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    boolean existsByDateAndTimeId(LocalDate date, Long timeId);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 }

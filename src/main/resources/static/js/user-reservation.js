@@ -1,4 +1,4 @@
-const THEME_API_ENDPOINT = '/themes';
+const THEME_API_ENDPOINT = '/reservations/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)

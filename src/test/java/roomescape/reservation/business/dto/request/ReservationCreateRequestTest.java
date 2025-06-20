@@ -13,7 +13,7 @@ class ReservationCreateRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest(null, TestConstant.FUTURE_DATE, 1L))
+        assertThatThrownBy(() -> new ReservationCreateRequest(null, TestConstant.FUTURE_DATE, 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 null이 될 수 없습니다.");
     }
@@ -23,7 +23,7 @@ class ReservationCreateRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest("   ", TestConstant.FUTURE_DATE, 1L))
+        assertThatThrownBy(() -> new ReservationCreateRequest("   ", TestConstant.FUTURE_DATE, 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 빈 값이 될 수 없습니다.");
     }
@@ -34,12 +34,22 @@ class ReservationCreateRequestTest {
         // When
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, null, 1L))
+            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, null, 1L, 1L))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
-            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, null))
+            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, null, 1L))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
         });
+    }
+
+    @Test
+    void 테마는_null이_될_수_없다() {
+        // Given
+        // When
+        // Then
+        assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, 1L, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마는 null이 될 수 없습니다.");
     }
 }

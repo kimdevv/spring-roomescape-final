@@ -13,7 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDate;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"date", "timeId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"date", "timeId", "themeId"}))
 public class Reservation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +29,18 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private ReservationTime time;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Theme theme;
+
     protected Reservation() {}
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = null;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Long getId() {
@@ -52,5 +57,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
