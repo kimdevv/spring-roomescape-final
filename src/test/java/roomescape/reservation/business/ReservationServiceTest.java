@@ -74,4 +74,13 @@ class ReservationServiceTest {
                 .isInstanceOf(ReservationDoesNotExistException.class)
                 .hasMessage("존재하지 않는 예약 id입니다.");
     }
+
+    @Test
+    void 모든_예약을_조회할_수_있다() {
+        // Given
+        Reservation reservation = reservationService.createReservation(new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+
+        // When & Then
+        assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
+    }
 }
