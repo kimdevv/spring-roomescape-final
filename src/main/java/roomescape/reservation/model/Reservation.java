@@ -5,14 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"date", "time"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"date", "timeId"}))
 public class Reservation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +25,13 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
-    private LocalTime time;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private ReservationTime time;
 
     protected Reservation() {}
 
-    public Reservation(String name, LocalDate date, LocalTime time) {
+    public Reservation(String name, LocalDate date, ReservationTime time) {
         this.id = null;
         this.name = name;
         this.date = date;
@@ -48,7 +50,7 @@ public class Reservation {
         return date;
     }
 
-    public LocalTime getTime() {
+    public ReservationTime getTime() {
         return time;
     }
 }

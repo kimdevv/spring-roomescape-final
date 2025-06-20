@@ -13,7 +13,7 @@ class ReservationCreateRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest(null, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
+        assertThatThrownBy(() -> new ReservationCreateRequest(null, TestConstant.FUTURE_DATE, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 null이 될 수 없습니다.");
     }
@@ -23,7 +23,7 @@ class ReservationCreateRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateRequest("   ", TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME))
+        assertThatThrownBy(() -> new ReservationCreateRequest("   ", TestConstant.FUTURE_DATE, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 빈 값이 될 수 없습니다.");
     }
@@ -34,7 +34,7 @@ class ReservationCreateRequestTest {
         // When
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, null, TestConstant.FUTURE_TIME))
+            assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, null, 1L))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
             assertThatThrownBy(() -> new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, null))

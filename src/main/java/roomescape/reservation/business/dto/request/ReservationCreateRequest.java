@@ -3,11 +3,11 @@ package roomescape.reservation.business.dto.request;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record ReservationCreateRequest(String name, LocalDate date, LocalTime time) {
+public record ReservationCreateRequest(String name, LocalDate date, Long timeId) {
 
     public ReservationCreateRequest {
         validateName(name);
-        validateDateTime(date, time);
+        validateDateTime(date, timeId);
     }
 
     private void validateName(String name) {
@@ -19,8 +19,8 @@ public record ReservationCreateRequest(String name, LocalDate date, LocalTime ti
         }
     }
 
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        if (date == null || time == null) {
+    private void validateDateTime(LocalDate date, Long timeId) {
+        if (date == null || timeId == null) {
             throw new IllegalArgumentException("날짜와 시간은 null이 될 수 없습니다.");
         }
     }
