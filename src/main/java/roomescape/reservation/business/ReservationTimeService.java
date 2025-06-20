@@ -29,7 +29,7 @@ public class ReservationTimeService {
 
     private void validateDuplicatedStartAt(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new DuplicatedReservationTimeException("이미 해당 시간은 등록되어 있습니다.");
+            throw new DuplicatedReservationTimeException("이미 해당 시각은 등록되어 있습니다.");
         }
     }
 
@@ -41,6 +41,7 @@ public class ReservationTimeService {
     public void deleteReservationTimeById(Long id) {
         if (reservationTimeRepository.existsById(id)) {
             reservationTimeRepository.deleteById(id);
+            return;
         }
         throw new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다.");
     }

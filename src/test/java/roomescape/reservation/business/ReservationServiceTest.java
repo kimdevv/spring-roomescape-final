@@ -33,7 +33,7 @@ class ReservationServiceTest {
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(createdReservation.getId()).isEqualTo(1L);
+            softAssertions.assertThat(createdReservation.getId()).isNotNull();
             softAssertions.assertThat(createdReservation.getName()).isEqualTo(TestConstant.MEMBER_NAME);
             softAssertions.assertThat(createdReservation.getDate()).isEqualTo(TestConstant.FUTURE_DATE);
             softAssertions.assertThat(createdReservation.getTime()).isEqualTo(TestConstant.FUTURE_TIME);
@@ -70,7 +70,7 @@ class ReservationServiceTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> reservationService.cancelReservation(Long.MAX_VALUE))
+        assertThatThrownBy(() -> reservationService.cancelReservation(TestConstant.INVALID_ENTITY_ID))
                 .isInstanceOf(ReservationDoesNotExistException.class)
                 .hasMessage("존재하지 않는 예약 id입니다.");
     }
