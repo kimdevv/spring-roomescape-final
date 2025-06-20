@@ -12,6 +12,7 @@ import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.exception.DuplicatedThemeException;
 import roomescape.reservation.model.Theme;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
@@ -48,5 +49,14 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, "다른 설명", "다른 주소")))
                 .isInstanceOf(DuplicatedThemeException.class)
                 .hasMessage("이미 존재하는 테마의 이름입니다.");
+    }
+
+    @Test
+    void 저장되어_있는_모든_테마를_조회할_수_있다() {
+        // Given
+        Theme theme = themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+
+        // When & Then
+        assertThat(themeService.findAllThemes()).containsExactlyInAnyOrder(theme);
     }
 }

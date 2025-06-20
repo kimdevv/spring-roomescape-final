@@ -6,6 +6,8 @@ import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedThemeException;
 import roomescape.reservation.model.Theme;
 
+import java.util.List;
+
 @Service
 public class ThemeService {
 
@@ -25,5 +27,9 @@ public class ThemeService {
         if (themeRepository.existsByName(name)) {
             throw new DuplicatedThemeException("이미 존재하는 테마의 이름입니다.");
         }
+    }
+
+    public List<Theme> findAllThemes() {
+        return themeRepository.findAll();
     }
 }
