@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
+import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.exception.DuplicatedReservationException;
 import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,10 +26,10 @@ class ReservationServiceTest {
     @Test
     void 예약을_저장할_수_있다() {
         // Given
-        ReservationCreateWebRequest reservationCreateWebRequest = new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
 
         // When
-        Reservation createdReservation = reservationService.createReservation(reservationCreateWebRequest);
+        Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -43,10 +43,10 @@ class ReservationServiceTest {
     @Test
     void 이미_예약이_등록된_시각에_중복으로_예약을_등록할_수_없다() {
         // Given
-        reservationService.createReservation(new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
 
         // When & Then
-        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateWebRequest(TestConstant.MEMBER_NAME2, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME)))
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME2, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME)))
                 .isInstanceOf(DuplicatedReservationException.class)
                 .hasMessage("중복된 시각에는 예약할 수 없습니다.");
     }
@@ -54,8 +54,8 @@ class ReservationServiceTest {
     @Test
     void 예약을_취소할_수_있다() {
         // Given
-        ReservationCreateWebRequest reservationCreateWebRequest = new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
-        Reservation createdReservation = reservationService.createReservation(reservationCreateWebRequest);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME);
+        Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
         int originalCount = reservationService.findAllReservations().size();
 
         // When
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     @Test
     void 모든_예약을_조회할_수_있다() {
         // Given
-        Reservation reservation = reservationService.createReservation(new ReservationCreateWebRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
