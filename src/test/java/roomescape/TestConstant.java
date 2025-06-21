@@ -5,6 +5,8 @@ import java.time.LocalTime;
 
 public class TestConstant {
 
+    public static final String FAKE_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwaHJlZUBnbWFpbC5jb20iLCJpYXQiOjE3NTA0OTU5OTgsImV4cCI6MTc1MDQ5OTU5OH0.tkFrxuBodd_xjZSs4cTPMzvxk3FC4h4ZBBN9s2Z6AhY";
+
     public static final String MEMBER_EMAIL = "phree@gmail.com";
     public static final String MEMBER_PASSWORD = "phreepass1234!";
     public static final String MEMBER_NAME = "프리";
