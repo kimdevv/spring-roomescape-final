@@ -3,10 +3,12 @@ package roomescape.reservation.business;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.business.dto.request.ReservationTimeCreateRequest;
+import roomescape.reservation.business.dto.request.ReservationTimeGetWithAvailabilityRequest;
 import roomescape.reservation.database.ReservationTimeRepository;
 import roomescape.reservation.exception.DuplicatedReservationTimeException;
 import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
 import roomescape.reservation.model.ReservationTime;
+import roomescape.reservation.presentation.dto.response.ReservationTimeGetWithAvailabilityWebResponse;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -35,6 +37,10 @@ public class ReservationTimeService {
 
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeRepository.findAll();
+    }
+
+    public List<ReservationTimeGetWithAvailabilityWebResponse> findAllReservationTimesWithAvailability(ReservationTimeGetWithAvailabilityRequest reservationTimeGetWithAvailabilityRequest) {
+        return reservationTimeRepository.findAllWithAvailability(reservationTimeGetWithAvailabilityRequest.themeId(), reservationTimeGetWithAvailabilityRequest.date());
     }
 
     @Transactional

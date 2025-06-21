@@ -8,9 +8,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
 import roomescape.reservation.business.dto.request.ReservationTimeCreateRequest;
+import roomescape.reservation.business.dto.request.ReservationTimeGetWithAvailabilityRequest;
+import roomescape.reservation.database.ReservationRepository;
+import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedReservationTimeException;
 import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
+import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
+import roomescape.reservation.model.Theme;
+import roomescape.reservation.presentation.dto.response.ReservationTimeGetWithAvailabilityWebResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,6 +28,12 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     void 예약시간을_생성할_수_있다() {
@@ -52,10 +64,25 @@ class ReservationTimeServiceTest {
     @Test
     void 저장되어_있는_모든_예약시간을_조회할_수_있다() {
         // Given
-        ReservationTime reservationTime = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME));;
+        ReservationTime reservationTime = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME));
 
         // When & Then
         assertThat(reservationTimeService.findAllReservationTimes()).containsExactlyInAnyOrder(reservationTime);
+    }
+
+    @Test
+    void 저장되어_있는_모든_예약시간을_예약가능_여부와_함께_조회할_수_있다() {
+        // Given
+        ReservationTime reservationTime1 = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME));
+        ReservationTime reservationTime2 = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME.plusMinutes(5)));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, reservationTime1, theme));
+        ReservationTimeGetWithAvailabilityRequest reservationTimeGetWithAvailabilityRequest = new ReservationTimeGetWithAvailabilityRequest(theme.getId(), TestConstant.FUTURE_DATE);
+
+        // When & Then
+        assertThat(reservationTimeService.findAllReservationTimesWithAvailability(reservationTimeGetWithAvailabilityRequest))
+                .containsExactlyInAnyOrder(new ReservationTimeGetWithAvailabilityWebResponse(reservationTime1.getId(), reservationTime1.getStartAt(), false),
+                        new ReservationTimeGetWithAvailabilityWebResponse(reservationTime2.getId(), reservationTime2.getStartAt(), true));
     }
 
     @Test
