@@ -1,5 +1,6 @@
 package roomescape.reservation.business;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.database.ThemeRepository;
@@ -7,6 +8,7 @@ import roomescape.reservation.exception.DuplicatedThemeException;
 import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,5 +42,11 @@ public class ThemeService {
             return;
         }
         throw new ThemeDoesNotExistException("존재하지 않는 테마 id입니다.");
+    }
+
+    public List<Theme> findPopularThemes() {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(ReservationConstants.POPULAR_THEMES_PERIOD_DAYS);
+        return themeRepository.findPopular(startDate, endDate, PageRequest.of(0, ReservationConstants.POPULAR_THEMES_COUNT)).getContent();
     }
 }
