@@ -15,4 +15,14 @@ public class NormalController {
     public String normalReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String normalLoginPage() {
+        return "login";
+    }
+
+    @GetMapping("/signup")
+    public String normalSignupPage() {
+        return "signup";
+    }
 }
