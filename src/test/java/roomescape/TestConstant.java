@@ -5,8 +5,11 @@ import java.time.LocalTime;
 
 public class TestConstant {
 
+    public static final String MEMBER_EMAIL = "phree@gmail.com";
+    public static final String MEMBER_PASSWORD = "phreepass1234!";
     public static final String MEMBER_NAME = "프리";
     public static final String MEMBER_NAME2 = "프리2";
+
     public static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
     public static final LocalTime FUTURE_TIME = LocalTime.now().plusMinutes(2).withNano(0);
 
