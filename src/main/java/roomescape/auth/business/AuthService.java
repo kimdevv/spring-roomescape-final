@@ -20,6 +20,6 @@ public class AuthService {
     public String login(LoginRequest requestBody) {
         Member member = memberRepository.findByEmailAndPassword(requestBody.email(), requestBody.password())
                 .orElseThrow(() -> new MemberDoesNotExistException("잘못된 이메일 혹은 비밀번호입니다."));
-        return jwtProvider.generateToken(member.getEmail());
+        return jwtProvider.generateToken(member.getEmail(), member.getRole());
     }
 }

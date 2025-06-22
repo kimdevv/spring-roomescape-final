@@ -27,7 +27,7 @@ class MemberServiceTest {
         MemberCreateRequest memberCreateRequest = new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME);
 
         // When
-        Member member = memberService.createMember(memberCreateRequest);
+        Member member = memberService.createNormalMember(memberCreateRequest);
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -41,10 +41,10 @@ class MemberServiceTest {
     @Test
     void 중복된_이메일으로는_멤버를_생성할_수_없다() {
         // Given
-        memberService.createMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
+        memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
 
         // When & Then
-        assertThatThrownBy(() -> memberService.createMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, "다른 비밀번호", "다른 이름")))
+        assertThatThrownBy(() -> memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, "다른 비밀번호", "다른 이름")))
                 .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage("이미 가입된 이메일입니다.");
     }

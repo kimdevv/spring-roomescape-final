@@ -5,6 +5,7 @@ import roomescape.member.business.dto.request.MemberCreateRequest;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 
 @Service
 public class MemberService {
@@ -15,10 +16,10 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createMember(MemberCreateRequest memberCreateRequest) {
+    public Member createNormalMember(MemberCreateRequest memberCreateRequest) {
         String email = memberCreateRequest.email();
         validateDuplicatedEmail(email);
-        return memberRepository.save(new Member(email, memberCreateRequest.password(), memberCreateRequest.name()));
+        return memberRepository.save(new Member(email, memberCreateRequest.password(), memberCreateRequest.name(), Role.NORMAL));
     }
 
     private void validateDuplicatedEmail(String email) {

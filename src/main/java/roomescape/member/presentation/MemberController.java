@@ -23,8 +23,8 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberGetWebResponse> createMember(@RequestBody MemberCreateWebRequest requestBody) {
-        Member member = memberService.createMember(new MemberCreateRequest(requestBody.email(), requestBody.password(), requestBody.name()));
+    public ResponseEntity<MemberGetWebResponse> createNormalMember(@RequestBody MemberCreateWebRequest requestBody) {
+        Member member = memberService.createNormalMember(new MemberCreateRequest(requestBody.email(), requestBody.password(), requestBody.name()));
         return ResponseEntity.status(HttpStatus.CREATED).body(new MemberGetWebResponse(member.getEmail(), member.getName()));
     }
 }
