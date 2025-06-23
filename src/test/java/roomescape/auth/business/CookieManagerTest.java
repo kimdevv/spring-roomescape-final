@@ -58,7 +58,7 @@ class CookieManagerTest {
 
         // When & Then
         assertThatThrownBy(() -> cookieManager.parse(cookies, "invalidName"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("로그인하지 않은 상태이거나 잘못된 요청입니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("잘못된 요청입니다.");
     }
 }

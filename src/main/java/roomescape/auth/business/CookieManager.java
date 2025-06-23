@@ -22,6 +22,6 @@ public class CookieManager {
                 return cookie.getValue();
             }
         }
-        throw new IllegalStateException("로그인하지 않은 상태이거나 잘못된 요청입니다.");
+        throw new IllegalArgumentException("잘못된 요청입니다.");
     }
 }
