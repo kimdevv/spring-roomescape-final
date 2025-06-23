@@ -1,10 +1,12 @@
 package roomescape.auth.business;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import roomescape.member.model.Role;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -22,7 +24,20 @@ public class JwtProvider {
                 .claim("role", role)
                 .issuedAt(now)
                 .expiration(validity)
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
+                .signWith(generateSecretKey())
                 .compact();
+    }
+
+    private SecretKey generateSecretKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Object parseClaim(String token, String claimName) {
+        Claims claims = Jwts.parser()
+                .verifyWith(generateSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get(claimName);
     }
 }
