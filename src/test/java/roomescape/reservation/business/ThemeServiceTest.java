@@ -10,7 +10,6 @@ import roomescape.TestConstant;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.member.model.Role;
-import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.database.ReservationTimeRepository;
 import roomescape.reservation.exception.DuplicatedThemeException;
@@ -18,6 +17,7 @@ import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
+import roomescape.reservation.presentation.dto.request.ThemeCreateWebRequest;
 
 import java.time.LocalDate;
 
@@ -44,10 +44,10 @@ class ThemeServiceTest {
     @Test
     void 테마를_생성할_수_있다() {
         // Given
-        ThemeCreateRequest themeCreateRequest = new ThemeCreateRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL);
+        ThemeCreateWebRequest themeCreateWebRequest = new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL);
 
         // When
-        Theme theme = themeService.createTheme(themeCreateRequest);
+        Theme theme = themeService.createTheme(themeCreateWebRequest);
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -61,10 +61,10 @@ class ThemeServiceTest {
     @Test
     void 중복된_이름의_테마는_생성할_수_없다() {
         // Given
-        themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        themeService.createTheme(new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
 
         // When & Then
-        assertThatThrownBy(() -> themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, "다른 설명", "다른 주소")))
+        assertThatThrownBy(() -> themeService.createTheme(new ThemeCreateWebRequest(TestConstant.THEME_NAME, "다른 설명", "다른 주소")))
                 .isInstanceOf(DuplicatedThemeException.class)
                 .hasMessage("이미 존재하는 테마의 이름입니다.");
     }
@@ -72,7 +72,7 @@ class ThemeServiceTest {
     @Test
     void 저장되어_있는_모든_테마를_조회할_수_있다() {
         // Given
-        Theme theme = themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Theme theme = themeService.createTheme(new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
 
         // When & Then
         assertThat(themeService.findAllThemes()).containsExactlyInAnyOrder(theme);
@@ -81,7 +81,7 @@ class ThemeServiceTest {
     @Test
     void 저장되어_있는_테마를_id로_삭제할_수_있다() {
         // Given
-        Theme theme = themeService.createTheme(new ThemeCreateRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Theme theme = themeService.createTheme(new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
         int originalCount = themeService.findAllThemes().size();
 
         // When
@@ -105,10 +105,10 @@ class ThemeServiceTest {
     void 오늘로부터_일주일_동안_가장_많이_예약된_테마_10개를_불러올_수_있다() {
         // Given
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
-        Theme theme1 = themeService.createTheme(new ThemeCreateRequest("테마1", "테마1 설명", "테마1 썸네일"));
-        Theme theme2 = themeService.createTheme(new ThemeCreateRequest("테마2", "테마2 설명", "테마2 썸네일"));
-        Theme theme3 = themeService.createTheme(new ThemeCreateRequest("테마3", "테마3 설명", "테마3 썸네일"));
-        Theme theme4 = themeService.createTheme(new ThemeCreateRequest("테마4", "테마4 설명", "테마4 썸네일"));
+        Theme theme1 = themeService.createTheme(new ThemeCreateWebRequest("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme theme2 = themeService.createTheme(new ThemeCreateWebRequest("테마2", "테마2 설명", "테마2 썸네일"));
+        Theme theme3 = themeService.createTheme(new ThemeCreateWebRequest("테마3", "테마3 설명", "테마3 썸네일"));
+        Theme theme4 = themeService.createTheme(new ThemeCreateWebRequest("테마4", "테마4 설명", "테마4 썸네일"));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         reservationRepository.save(new Reservation(member, LocalDate.now(), time, theme3));
         reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(1), time, theme3));

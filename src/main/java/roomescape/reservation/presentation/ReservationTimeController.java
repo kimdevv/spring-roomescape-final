@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.annotation.AdminLogin;
 import roomescape.auth.annotation.NormalLogin;
 import roomescape.reservation.business.ReservationTimeService;
-import roomescape.reservation.business.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.business.dto.request.ReservationTimeGetWithAvailabilityRequest;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.presentation.dto.request.ReservationTimeCreateWebRequest;
@@ -35,7 +34,7 @@ public class ReservationTimeController {
     @AdminLogin
     @PostMapping
     public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTimeCreateWebRequest requestBody) {
-        ReservationTime reservationTime = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(requestBody.startAt()));
+        ReservationTime reservationTime = reservationTimeService.createReservationTime(requestBody);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTime);
     }
 

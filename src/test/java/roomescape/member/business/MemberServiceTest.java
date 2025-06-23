@@ -7,9 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
-import roomescape.member.business.dto.request.MemberCreateRequest;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
+import roomescape.member.presentation.dto.request.MemberCreateWebRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,10 +25,10 @@ class MemberServiceTest {
     @Test
     void 멤버를_생성할_수_있다() {
         // Given
-        MemberCreateRequest memberCreateRequest = new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME);
+        MemberCreateWebRequest memberCreateWebRequest = new MemberCreateWebRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME);
 
         // When
-        Member member = memberService.createNormalMember(memberCreateRequest);
+        Member member = memberService.createNormalMember(memberCreateWebRequest);
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -42,10 +42,10 @@ class MemberServiceTest {
     @Test
     void 중복된_이메일으로는_멤버를_생성할_수_없다() {
         // Given
-        memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
+        memberService.createNormalMember(new MemberCreateWebRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
 
         // When & Then
-        assertThatThrownBy(() -> memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, "다른 비밀번호", "다른 이름")))
+        assertThatThrownBy(() -> memberService.createNormalMember(new MemberCreateWebRequest(TestConstant.MEMBER_EMAIL, "다른 비밀번호", "다른 이름")))
                 .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage("이미 가입된 이메일입니다.");
     }
@@ -53,7 +53,7 @@ class MemberServiceTest {
     @Test
     void 저장되어_있는_모든_멤버를_조회할_수_있다() {
         // Given
-        Member member = memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
+        Member member = memberService.createNormalMember(new MemberCreateWebRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
 
         // When & Then
         assertThat(memberService.findAllMembers()).containsExactlyInAnyOrder(member);

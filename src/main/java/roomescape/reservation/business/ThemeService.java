@@ -2,11 +2,11 @@ package roomescape.reservation.business;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedThemeException;
 import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Theme;
+import roomescape.reservation.presentation.dto.request.ThemeCreateWebRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,10 +20,10 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme createTheme(ThemeCreateRequest themeCreateRequest) {
-        String name = themeCreateRequest.name();
+    public Theme createTheme(ThemeCreateWebRequest themeCreateWebRequest) {
+        String name = themeCreateWebRequest.name();
         validateDuplicatedName(name);
-        return themeRepository.save(new Theme(name, themeCreateRequest.description(), themeCreateRequest.thumbnail()));
+        return themeRepository.save(new Theme(name, themeCreateWebRequest.description(), themeCreateWebRequest.thumbnail()));
     }
 
     private void validateDuplicatedName(String name) {

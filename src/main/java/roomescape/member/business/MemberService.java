@@ -1,12 +1,11 @@
 package roomescape.member.business;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.business.dto.request.MemberCreateRequest;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
 import roomescape.member.model.Role;
-import roomescape.member.presentation.dto.response.MemberGetWebResponse;
+import roomescape.member.presentation.dto.request.MemberCreateWebRequest;
 
 import java.util.List;
 
@@ -19,10 +18,10 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createNormalMember(MemberCreateRequest memberCreateRequest) {
-        String email = memberCreateRequest.email();
+    public Member createNormalMember(MemberCreateWebRequest memberCreateWebRequest) {
+        String email = memberCreateWebRequest.email();
         validateDuplicatedEmail(email);
-        return memberRepository.save(new Member(email, memberCreateRequest.password(), memberCreateRequest.name(), Role.NORMAL));
+        return memberRepository.save(new Member(email, memberCreateWebRequest.password(), memberCreateWebRequest.name(), Role.NORMAL));
     }
 
     private void validateDuplicatedEmail(String email) {

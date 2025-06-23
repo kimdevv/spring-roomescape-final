@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.annotation.AdminLogin;
 import roomescape.auth.annotation.NormalLogin;
 import roomescape.reservation.business.ThemeService;
-import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.model.Theme;
 import roomescape.reservation.presentation.dto.request.ThemeCreateWebRequest;
 
@@ -31,7 +30,7 @@ public class ThemeController {
     @AdminLogin
     @PostMapping
     public ResponseEntity<Theme> createTheme(@RequestBody ThemeCreateWebRequest requestBody) {
-        Theme theme = themeService.createTheme(new ThemeCreateRequest(requestBody.name(), requestBody.description(), requestBody.thumbnail()));
+        Theme theme = themeService.createTheme(requestBody);
         return ResponseEntity.status(HttpStatus.CREATED).body(theme);
     }
 
