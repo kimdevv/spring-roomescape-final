@@ -2,6 +2,7 @@ package roomescape.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import roomescape.auth.annotation.NormalLogin;
 
 @Controller
 public class NormalController {
@@ -11,6 +12,7 @@ public class NormalController {
         return "index";
     }
 
+    @NormalLogin
     @GetMapping("/reservation")
     public String normalReservationPage() {
         return "reservation";

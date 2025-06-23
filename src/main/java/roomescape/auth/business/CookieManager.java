@@ -17,6 +17,9 @@ public class CookieManager {
     }
 
     public String parse(Cookie[] cookies, String name) {
+        if (cookies == null) {
+            throw new IllegalArgumentException("잘못된 요청입니다.");
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name)) {
                 return cookie.getValue();

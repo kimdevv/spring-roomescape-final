@@ -61,4 +61,14 @@ class CookieManagerTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }
+
+    @Test
+    void 쿠키가_null인_경우_값을_파싱할_수_없다() {
+        // Given
+        // When
+        // Then
+        assertThatThrownBy(() -> cookieManager.parse(null, "invalidName"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("잘못된 요청입니다.");
+    }
 }

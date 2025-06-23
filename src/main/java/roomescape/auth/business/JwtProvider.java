@@ -1,9 +1,11 @@
 package roomescape.auth.business;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import roomescape.auth.exception.UnauthorizedException;
 import roomescape.member.model.Role;
 
 import javax.crypto.SecretKey;
@@ -33,11 +35,19 @@ public class JwtProvider {
     }
 
     public Object parseClaim(String token, String claimName) {
-        Claims claims = Jwts.parser()
-                .verifyWith(generateSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims.get(claimName);
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(generateSecretKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            return claims.get(claimName);
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new UnauthorizedException("세션이 만료되었습니다. 다시 로그인해 주세요.");
+        }
+    }
+
+    public boolean isAdmin(String token) {
+        return parseClaim(token, "role").equals(Role.ADMIN.name());
     }
 }
