@@ -16,6 +16,7 @@ import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
+import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,6 +34,20 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+    }
+
+    public Reservation createReservation(ReservationCreateByAdminWebRequest reservationCreateByAdminWebRequest) {
+        LocalDate date = reservationCreateByAdminWebRequest.date();
+        Long timeId = reservationCreateByAdminWebRequest.timeId();
+        Long themeId = reservationCreateByAdminWebRequest.themeId();
+        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId);
+        Member member = memberRepository.findById(reservationCreateByAdminWebRequest.memberId())
+                .orElseThrow(() -> new MemberDoesNotExistException("존재하지 않는 멤버의 id입니다."));
+        ReservationTime time = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
+        return reservationRepository.save(new Reservation(member, date, time, theme));
     }
 
     @Transactional

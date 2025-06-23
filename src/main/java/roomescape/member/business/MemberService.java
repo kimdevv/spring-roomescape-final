@@ -6,6 +6,9 @@ import roomescape.member.database.MemberRepository;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
 import roomescape.member.model.Role;
+import roomescape.member.presentation.dto.response.MemberGetWebResponse;
+
+import java.util.List;
 
 @Service
 public class MemberService {
@@ -26,5 +29,9 @@ public class MemberService {
         if (memberRepository.existsByEmail(email)) {
             throw new DuplicatedMemberException("이미 가입된 이메일입니다.");
         }
+    }
+
+    public List<Member> findAllMembers() {
+        return memberRepository.findAll();
     }
 }

@@ -11,6 +11,7 @@ import roomescape.member.business.dto.request.MemberCreateRequest;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
@@ -47,5 +48,14 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, "다른 비밀번호", "다른 이름")))
                 .isInstanceOf(DuplicatedMemberException.class)
                 .hasMessage("이미 가입된 이메일입니다.");
+    }
+
+    @Test
+    void 저장되어_있는_모든_멤버를_조회할_수_있다() {
+        // Given
+        Member member = memberService.createNormalMember(new MemberCreateRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
+
+        // When & Then
+        assertThat(memberService.findAllMembers()).containsExactlyInAnyOrder(member);
     }
 }

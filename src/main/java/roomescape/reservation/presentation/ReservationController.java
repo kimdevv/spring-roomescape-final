@@ -15,6 +15,7 @@ import roomescape.auth.model.LoginInfo;
 import roomescape.reservation.business.ReservationService;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
 import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
 import java.util.List;
@@ -33,6 +34,13 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateWebRequest requestBody, LoginInfo loginInfo) {
         Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(loginInfo.email(), requestBody.date(), requestBody.timeId(), requestBody.themeId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
+    }
+
+    @AdminLogin
+    @PostMapping("/admin")
+    public ResponseEntity<Reservation> createReservationByAdmin(@RequestBody ReservationCreateByAdminWebRequest requestBody) {
+        Reservation reservation = reservationService.createReservation(requestBody);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 
