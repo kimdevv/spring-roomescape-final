@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.annotation.AdminLogin;
+import roomescape.auth.annotation.NormalLogin;
 import roomescape.reservation.business.ReservationTimeService;
 import roomescape.reservation.business.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.business.dto.request.ReservationTimeGetWithAvailabilityRequest;
@@ -30,22 +32,26 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @AdminLogin
     @PostMapping
     public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTimeCreateWebRequest requestBody) {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(requestBody.startAt()));
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTime);
     }
 
+    @AdminLogin
     @GetMapping
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeService.findAllReservationTimes();
     }
 
+    @NormalLogin
     @GetMapping("/withAvailability")
     public List<ReservationTimeGetWithAvailabilityWebResponse> findAllReservationTimesWithAvailability(@RequestParam Long themeId, @RequestParam LocalDate date) {
         return reservationTimeService.findAllReservationTimesWithAvailability(new ReservationTimeGetWithAvailabilityRequest(themeId, date));
     }
 
+    @AdminLogin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTimeById(id);

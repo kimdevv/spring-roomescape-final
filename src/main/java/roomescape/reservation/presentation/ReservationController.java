@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.annotation.AdminLogin;
+import roomescape.auth.annotation.NormalLogin;
+import roomescape.auth.model.LoginInfo;
 import roomescape.reservation.business.ReservationService;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.model.Reservation;
@@ -26,17 +29,20 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @NormalLogin
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateWebRequest requestBody) {
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(requestBody.name(), requestBody.date(), requestBody.timeId(), requestBody.themeId()));
+    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateWebRequest requestBody, LoginInfo loginInfo) {
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(loginInfo.email(), requestBody.date(), requestBody.timeId(), requestBody.themeId()));
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 
+    @AdminLogin
     @GetMapping
     public List<Reservation> findAllReservations() {
         return reservationService.findAllReservations();
     }
 
+    @NormalLogin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelReservation(@PathVariable Long id) {
         reservationService.cancelReservation(id);

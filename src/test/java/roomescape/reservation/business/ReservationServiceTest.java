@@ -7,6 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
+import roomescape.member.database.MemberDoesNotExistException;
+import roomescape.member.database.MemberRepository;
+import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.database.ReservationTimeRepository;
 import roomescape.reservation.database.ThemeRepository;
@@ -30,6 +34,9 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
@@ -38,9 +45,10 @@ class ReservationServiceTest {
     @Test
     void 예약을_저장할_수_있다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, time.getId(), theme.getId());
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId());
 
         // When
         Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
@@ -48,7 +56,7 @@ class ReservationServiceTest {
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(createdReservation.getId()).isNotNull();
-            softAssertions.assertThat(createdReservation.getName()).isEqualTo(TestConstant.MEMBER_NAME);
+            softAssertions.assertThat(createdReservation.getMember()).isEqualTo(member);
             softAssertions.assertThat(createdReservation.getDate()).isEqualTo(TestConstant.FUTURE_DATE);
             softAssertions.assertThat(createdReservation.getTime()).isEqualTo(time);
             softAssertions.assertThat(createdReservation.getTheme()).isEqualTo(theme);
@@ -58,21 +66,36 @@ class ReservationServiceTest {
     @Test
     void 이미_예약이_등록된_시각에_중복으로_예약을_등록할_수_없다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
 
         // When & Then
-        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME2, TestConstant.FUTURE_DATE, time.getId(), theme.getId())))
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId())))
                 .isInstanceOf(DuplicatedReservationException.class)
                 .hasMessage("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
     }
 
     @Test
+    void 존재하지_않는_멤버의_이메일으로는_예약을_등록할_수_없다() {
+        // Given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("invalid@email.com", TestConstant.FUTURE_DATE, time.getId(), theme.getId());
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
+                .isInstanceOf(MemberDoesNotExistException.class)
+                .hasMessage("잘못된 멤버의 요청입니다.");
+    }
+
+    @Test
     void 존재하지_않는_예약시간에는_예약을_등록할_수_없다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, TestConstant.INVALID_ENTITY_ID, theme.getId());
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, TestConstant.INVALID_ENTITY_ID, theme.getId());
 
         // When & Then
         assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
@@ -83,8 +106,9 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_테마에는_예약을_등록할_수_없다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, time.getId(), TestConstant.INVALID_ENTITY_ID);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), TestConstant.INVALID_ENTITY_ID);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
@@ -95,9 +119,10 @@ class ReservationServiceTest {
     @Test
     void 예약을_취소할_수_있다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation createdReservation = reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        Reservation createdReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
         int originalCount = reservationService.findAllReservations().size();
 
         // When
@@ -120,9 +145,10 @@ class ReservationServiceTest {
     @Test
     void 모든_예약을_조회할_수_있다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
 
         // When & Then
         assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);

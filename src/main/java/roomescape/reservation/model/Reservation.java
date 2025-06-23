@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import roomescape.member.model.Member;
 
 import java.time.LocalDate;
 
@@ -19,8 +20,9 @@ public class Reservation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Member member;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -35,9 +37,9 @@ public class Reservation {
 
     protected Reservation() {}
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = null;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -47,8 +49,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

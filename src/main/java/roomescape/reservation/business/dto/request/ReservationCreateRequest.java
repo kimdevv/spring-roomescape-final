@@ -2,20 +2,20 @@ package roomescape.reservation.business.dto.request;
 
 import java.time.LocalDate;
 
-public record ReservationCreateRequest(String name, LocalDate date, Long timeId, Long themeId) {
+public record ReservationCreateRequest(String email, LocalDate date, Long timeId, Long themeId) {
 
     public ReservationCreateRequest {
-        validateName(name);
+        validateEmail(email);
         validateDateTime(date, timeId);
         validateTheme(themeId);
     }
 
-    private void validateName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("이름은 null이 될 수 없습니다.");
+    private void validateEmail(String email) {
+        if (email == null) {
+            throw new IllegalArgumentException("이메일은 null이 될 수 없습니다.");
         }
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 빈 값이 될 수 없습니다.");
+        if (email.isBlank()) {
+            throw new IllegalArgumentException("이메일은 빈 값이 될 수 없습니다.");
         }
     }
 

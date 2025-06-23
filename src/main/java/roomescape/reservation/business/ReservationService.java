@@ -2,6 +2,9 @@ package roomescape.reservation.business;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.database.MemberDoesNotExistException;
+import roomescape.member.database.MemberRepository;
+import roomescape.member.model.Member;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.database.ReservationTimeRepository;
@@ -20,11 +23,13 @@ import java.util.List;
 @Service
 public class ReservationService {
 
+    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(MemberRepository memberRepository, ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+        this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -36,11 +41,13 @@ public class ReservationService {
         Long timeId = reservationCreateRequest.timeId();
         Long themeId = reservationCreateRequest.themeId();
         validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId);
+        Member member = memberRepository.findByEmail(reservationCreateRequest.email())
+                .orElseThrow(() -> new MemberDoesNotExistException("잘못된 멤버의 요청입니다."));
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
-        return reservationRepository.save(new Reservation(reservationCreateRequest.name(), date, time, theme));
+        return reservationRepository.save(new Reservation(member, date, time, theme));
     }
 
     private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId) {

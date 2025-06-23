@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.annotation.AdminLogin;
+import roomescape.auth.annotation.NormalLogin;
 import roomescape.reservation.business.ThemeService;
 import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.model.Theme;
@@ -26,22 +28,26 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @AdminLogin
     @PostMapping
     public ResponseEntity<Theme> createTheme(@RequestBody ThemeCreateWebRequest requestBody) {
         Theme theme = themeService.createTheme(new ThemeCreateRequest(requestBody.name(), requestBody.description(), requestBody.thumbnail()));
         return ResponseEntity.status(HttpStatus.CREATED).body(theme);
     }
 
+    @NormalLogin
     @GetMapping
     public List<Theme> findAllThemes() {
         return themeService.findAllThemes();
     }
 
+    @NormalLogin
     @GetMapping("/popular")
     public List<Theme> findPopularThemes() {
         return themeService.findPopularThemes();
     }
 
+    @AdminLogin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteThemeById(id);

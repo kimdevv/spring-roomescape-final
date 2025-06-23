@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
+import roomescape.member.database.MemberRepository;
+import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.reservation.business.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.business.dto.request.ReservationTimeGetWithAvailabilityRequest;
 import roomescape.reservation.database.ReservationRepository;
@@ -34,6 +37,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     void 예약시간을_생성할_수_있다() {
@@ -75,8 +81,9 @@ class ReservationTimeServiceTest {
         // Given
         ReservationTime reservationTime1 = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME));
         ReservationTime reservationTime2 = reservationTimeService.createReservationTime(new ReservationTimeCreateRequest(TestConstant.FUTURE_TIME.plusMinutes(5)));
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, TestConstant.FUTURE_DATE, reservationTime1, theme));
+        reservationRepository.save(new Reservation(member, TestConstant.FUTURE_DATE, reservationTime1, theme));
         ReservationTimeGetWithAvailabilityRequest reservationTimeGetWithAvailabilityRequest = new ReservationTimeGetWithAvailabilityRequest(theme.getId(), TestConstant.FUTURE_DATE);
 
         // When & Then

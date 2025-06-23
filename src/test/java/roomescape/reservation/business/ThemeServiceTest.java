@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
+import roomescape.member.database.MemberRepository;
+import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.reservation.business.dto.request.ThemeCreateRequest;
 import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.database.ReservationTimeRepository;
@@ -34,6 +37,9 @@ class ThemeServiceTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     void 테마를_생성할_수_있다() {
@@ -98,26 +104,27 @@ class ThemeServiceTest {
     @Test
     void 오늘로부터_일주일_동안_가장_많이_예약된_테마_10개를_불러올_수_있다() {
         // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         Theme theme1 = themeService.createTheme(new ThemeCreateRequest("테마1", "테마1 설명", "테마1 썸네일"));
         Theme theme2 = themeService.createTheme(new ThemeCreateRequest("테마2", "테마2 설명", "테마2 썸네일"));
         Theme theme3 = themeService.createTheme(new ThemeCreateRequest("테마3", "테마3 설명", "테마3 썸네일"));
         Theme theme4 = themeService.createTheme(new ThemeCreateRequest("테마4", "테마4 설명", "테마4 썸네일"));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now(), time, theme3));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().minusDays(1), time, theme3));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().minusDays(2), time, theme3));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().minusDays(3), time, theme3));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now(), time, theme4));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(1), time, theme4));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(2), time, theme4));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().minusDays(1), time, theme4));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().minusDays(2), time, theme4));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now(), time, theme2));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(1), time, theme1));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(2), time, theme1));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(3), time, theme1));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(4), time, theme1));
-        reservationRepository.save(new Reservation(TestConstant.MEMBER_NAME, LocalDate.now().plusDays(5), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now(), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(1), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(2), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(3), time, theme3));
+        reservationRepository.save(new Reservation(member, LocalDate.now(), time, theme4));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme4));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(2), time, theme4));
+        reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(1), time, theme4));
+        reservationRepository.save(new Reservation(member, LocalDate.now().minusDays(2), time, theme4));
+        reservationRepository.save(new Reservation(member, LocalDate.now(), time, theme2));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(2), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(3), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(4), time, theme1));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(5), time, theme1));
 
         // When & Then
         assertThat(themeService.findPopularThemes()).containsExactly(theme3, theme4, theme2);
