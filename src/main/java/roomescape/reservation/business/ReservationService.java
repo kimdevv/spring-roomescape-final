@@ -75,6 +75,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findFilteredReservations(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {
+        return reservationRepository.findFiltered(memberId, themeId, startDate, endDate);
+    }
+
     @Transactional
     public void cancelReservation(Long id) {
         if (reservationRepository.existsById(id)) {

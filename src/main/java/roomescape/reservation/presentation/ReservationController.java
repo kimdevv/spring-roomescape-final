@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.annotation.AdminLogin;
 import roomescape.auth.annotation.NormalLogin;
@@ -18,6 +19,7 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
 import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,6 +51,16 @@ public class ReservationController {
     public List<Reservation> findAllReservations() {
         return reservationService.findAllReservations();
     }
+
+    @AdminLogin
+    @GetMapping("/filter")
+    public List<Reservation> findFilteredReservations(@RequestParam(required = false) Long memberId,
+                                                      @RequestParam(required = false) Long themeId,
+                                                      @RequestParam(required = false) LocalDate startDate,
+                                                      @RequestParam(required = false) LocalDate endDate) {
+        return reservationService.findFilteredReservations(memberId, themeId, startDate, endDate);
+    }
+
 
     @NormalLogin
     @DeleteMapping("/{id}")

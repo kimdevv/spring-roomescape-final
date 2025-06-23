@@ -117,6 +117,85 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 모든_예약을_조회할_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+
+        // When & Then
+        assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
+    }
+
+    @Test
+    void 예약을_멤버로_필터링해서_조회할_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        Member member2 = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL2, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME2, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId()));
+
+        // When & Then
+        assertThat(reservationService.findFilteredReservations(member.getId(), null, null, null)).containsExactlyInAnyOrder(reservation);
+    }
+
+    @Test
+    void 예약을_테마로_필터링해서_조회할_수_있다() {
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Theme theme2 = themeRepository.save(new Theme("다른 테마 이름", "다른 테마 설명", "다른 테마 썸네일 URL"));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId()));
+
+        // When & Then
+        assertThat(reservationService.findFilteredReservations(null, theme.getId(), null, null)).containsExactlyInAnyOrder(reservation);
+    }
+
+    @Test
+    void 예약을_날짜로_필터링해서_조회할_수_있다() {
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
+        Reservation reservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId()));
+        Reservation reservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(4), time.getId(), theme.getId()));
+
+        // When & Then
+        assertThat(reservationService.findFilteredReservations(null, null, TestConstant.FUTURE_DATE, TestConstant.FUTURE_DATE.plusDays(2))).containsExactlyInAnyOrder(reservation1, reservation2, reservation3);
+    }
+
+    @Test
+    void 예약을_여러_조건으로_필터링해서_조회할_수_있다() {
+        // Given
+        Member member1 = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        Member member2 = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL2, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME2, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme1 = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Theme theme2 = themeRepository.save(new Theme("다른 테마 이름", "다른 테마 설명", "다른 테마 썸네일 URL"));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme1.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme2.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme1.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme1.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme2.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme2.getId()));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme1.getId()));
+
+        // When & Then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(reservationService.findFilteredReservations(member1.getId(), theme2.getId(), null, null)).hasSize(2);
+            softAssertions.assertThat(reservationService.findFilteredReservations(member2.getId(), null, TestConstant.FUTURE_DATE.plusDays(1), TestConstant.FUTURE_DATE.plusDays(3))).hasSize(3);
+            softAssertions.assertThat(reservationService.findFilteredReservations(member2.getId(), theme1.getId(), TestConstant.FUTURE_DATE.plusDays(1), TestConstant.FUTURE_DATE.plusDays(3))).hasSize(2);
+        });
+    }
+
+    @Test
     void 예약을_취소할_수_있다() {
         // Given
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
@@ -140,17 +219,5 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancelReservation(TestConstant.INVALID_ENTITY_ID))
                 .isInstanceOf(ReservationDoesNotExistException.class)
                 .hasMessage("존재하지 않는 예약 id입니다.");
-    }
-
-    @Test
-    void 모든_예약을_조회할_수_있다() {
-        // Given
-        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
-        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId()));
-
-        // When & Then
-        assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
     }
 }
