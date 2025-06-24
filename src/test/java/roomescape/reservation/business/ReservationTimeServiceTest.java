@@ -16,6 +16,7 @@ import roomescape.reservation.database.ThemeRepository;
 import roomescape.reservation.exception.DuplicatedReservationTimeException;
 import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservation.model.ReservationStatus;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
 import roomescape.reservation.presentation.dto.request.ReservationTimeCreateWebRequest;
@@ -83,7 +84,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime2 = reservationTimeService.createReservationTime(new ReservationTimeCreateWebRequest(TestConstant.FUTURE_TIME.plusMinutes(5)));
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        reservationRepository.save(new Reservation(member, TestConstant.FUTURE_DATE, reservationTime1, theme));
+        reservationRepository.save(new Reservation(member, TestConstant.FUTURE_DATE, reservationTime1, theme, ReservationStatus.RESERVED));
         ReservationTimeGetWithAvailabilityRequest reservationTimeGetWithAvailabilityRequest = new ReservationTimeGetWithAvailabilityRequest(theme.getId(), TestConstant.FUTURE_DATE);
 
         // When & Then

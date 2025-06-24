@@ -14,6 +14,7 @@ import roomescape.reservation.exception.ReservationDoesNotExistException;
 import roomescape.reservation.exception.ReservationTimeDoesNotExistException;
 import roomescape.reservation.exception.ThemeDoesNotExistException;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservation.model.ReservationStatus;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
 import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
@@ -40,14 +41,14 @@ public class ReservationService {
         LocalDate date = reservationCreateByAdminWebRequest.date();
         Long timeId = reservationCreateByAdminWebRequest.timeId();
         Long themeId = reservationCreateByAdminWebRequest.themeId();
-        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId);
+        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId, ReservationStatus.RESERVED);
         Member member = memberRepository.findById(reservationCreateByAdminWebRequest.memberId())
                 .orElseThrow(() -> new MemberDoesNotExistException("존재하지 않는 멤버의 id입니다."));
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
-        return reservationRepository.save(new Reservation(member, date, time, theme));
+        return reservationRepository.save(new Reservation(member, date, time, theme, ReservationStatus.RESERVED));
     }
 
     @Transactional
@@ -55,18 +56,19 @@ public class ReservationService {
         LocalDate date = reservationCreateRequest.date();
         Long timeId = reservationCreateRequest.timeId();
         Long themeId = reservationCreateRequest.themeId();
-        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId);
+        ReservationStatus status = reservationCreateRequest.status();
+        validateDuplicatedDateAndTimeAndTheme(date, timeId, themeId, status);
         Member member = memberRepository.findByEmail(reservationCreateRequest.email())
                 .orElseThrow(() -> new MemberDoesNotExistException("잘못된 멤버의 요청입니다."));
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
-        return reservationRepository.save(new Reservation(member, date, time, theme));
+        return reservationRepository.save(new Reservation(member, date, time, theme, status));
     }
 
-    private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+    private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId, ReservationStatus status) {
+        if (status == ReservationStatus.RESERVED && reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new DuplicatedReservationException("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
         }
     }

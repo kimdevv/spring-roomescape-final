@@ -35,7 +35,7 @@ public class ReservationController {
     @NormalLogin
     @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateWebRequest requestBody, LoginInfo loginInfo) {
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(loginInfo.email(), requestBody.date(), requestBody.timeId(), requestBody.themeId()));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(loginInfo.email(), requestBody.date(), requestBody.timeId(), requestBody.themeId(), requestBody.status()));
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 

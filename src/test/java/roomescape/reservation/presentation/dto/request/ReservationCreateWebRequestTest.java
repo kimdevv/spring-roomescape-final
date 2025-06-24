@@ -3,6 +3,7 @@ package roomescape.reservation.presentation.dto.request;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import roomescape.TestConstant;
+import roomescape.reservation.model.ReservationStatus;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -14,10 +15,10 @@ class ReservationCreateWebRequestTest {
         // When
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThatThrownBy(() -> new ReservationCreateWebRequest(null, 1L, 1L))
+            assertThatThrownBy(() -> new ReservationCreateWebRequest(null, 1L, 1L, ReservationStatus.RESERVED))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
-            assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.FUTURE_DATE, null, 1L))
+            assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.FUTURE_DATE, null, 1L, ReservationStatus.RESERVED))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("날짜와 시간은 null이 될 수 없습니다.");
         });
@@ -28,8 +29,18 @@ class ReservationCreateWebRequestTest {
         // Given
         // When
         // Then
-        assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.FUTURE_DATE, 1L, null))
+        assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.FUTURE_DATE, 1L, null, ReservationStatus.RESERVED))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마는 null이 될 수 없습니다.");
+    }
+
+    @Test
+    void 예약상태는_null이_될_수_없다() {
+        // Given
+        // When
+        // Then
+        assertThatThrownBy(() -> new ReservationCreateWebRequest(TestConstant.FUTURE_DATE, 1L, 1L, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약상태는 null이 될 수 없습니다.");
     }
 }
