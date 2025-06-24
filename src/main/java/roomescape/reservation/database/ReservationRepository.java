@@ -3,13 +3,33 @@ package roomescape.reservation.database;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservation.model.ReservationStatus;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    List<Reservation> findByMemberIdAndStatus(Long memberId, ReservationStatus status);
+
+    @Query("""
+        SELECT new roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse(r.id, r.date, r.time, r.theme, (
+            SELECT COUNT(r2) + 1L
+            FROM Reservation r2
+            WHERE r2.date = r.date
+                AND r2.time = r.time
+                AND r2.theme = r.theme
+                AND r2.id < r.id
+                AND r2.status = 'WAITING'
+        ))
+        FROM Reservation r
+        WHERE r.status = 'WAITING'
+            AND r.member.id = :memberId
+    """)
+    List<WaitingReservationWithRankGetResponse> findWaitingReservationsWithRankByMemberId(Long memberId);
 
     @Query(value = """
         SELECT r 

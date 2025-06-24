@@ -6,6 +6,7 @@ import roomescape.member.database.MemberDoesNotExistException;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
+import roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse;
 import roomescape.reservation.database.ReservationRepository;
 import roomescape.reservation.database.ReservationTimeRepository;
 import roomescape.reservation.database.ThemeRepository;
@@ -18,9 +19,11 @@ import roomescape.reservation.model.ReservationStatus;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
 import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
+import roomescape.reservation.presentation.dto.response.ReservationMineGetWebResponse;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -75,6 +78,20 @@ public class ReservationService {
 
     public List<Reservation> findAllReservations() {
         return reservationRepository.findAll();
+    }
+
+    public List<ReservationMineGetWebResponse> findMyReservations(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberDoesNotExistException("존재하지 않는 멤버의 이메일입니다."));
+        List<Reservation> reservations = reservationRepository.findByMemberIdAndStatus(member.getId(), ReservationStatus.RESERVED);
+        List<WaitingReservationWithRankGetResponse> waitingReservations = reservationRepository.findWaitingReservationsWithRankByMemberId(member.getId());
+        List<ReservationMineGetWebResponse> responses = reservations.stream()
+                .map(reservation -> new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약"))
+                .collect(Collectors.toList());
+        for (WaitingReservationWithRankGetResponse waitingReservation : waitingReservations) {
+            responses.add(new ReservationMineGetWebResponse(waitingReservation.id(), waitingReservation.date(), waitingReservation.time().getStartAt(), waitingReservation.theme().getName(), String.format("%d번째 대기", waitingReservation.rank())));
+        }
+        return responses;
     }
 
     public List<Reservation> findFilteredReservations(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {

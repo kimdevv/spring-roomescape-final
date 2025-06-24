@@ -22,6 +22,9 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationStatus;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
+import roomescape.reservation.presentation.dto.response.ReservationMineGetWebResponse;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -61,6 +64,29 @@ class ReservationServiceTest {
             softAssertions.assertThat(createdReservation.getDate()).isEqualTo(TestConstant.FUTURE_DATE);
             softAssertions.assertThat(createdReservation.getTime()).isEqualTo(time);
             softAssertions.assertThat(createdReservation.getTheme()).isEqualTo(theme);
+            softAssertions.assertThat(createdReservation.getStatus()).isEqualTo(ReservationStatus.RESERVED);
+        });
+    }
+
+    @Test
+    void 대기_상태의_예약을_저장할_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING);
+
+        // When
+        Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
+
+        // Then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(createdReservation.getId()).isNotNull();
+            softAssertions.assertThat(createdReservation.getMember()).isEqualTo(member);
+            softAssertions.assertThat(createdReservation.getDate()).isEqualTo(TestConstant.FUTURE_DATE);
+            softAssertions.assertThat(createdReservation.getTime()).isEqualTo(time);
+            softAssertions.assertThat(createdReservation.getTheme()).isEqualTo(theme);
+            softAssertions.assertThat(createdReservation.getStatus()).isEqualTo(ReservationStatus.WAITING);
         });
     }
 
@@ -127,6 +153,27 @@ class ReservationServiceTest {
 
         // When & Then
         assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
+    }
+
+    @Test
+    void 특정_멤버의_예약을_이메일로_모두_조회할_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation waitingReservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        Reservation waitingReservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        Reservation waitingReservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        List<ReservationMineGetWebResponse> expected = List.of(
+                new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약"),
+                new ReservationMineGetWebResponse(waitingReservation1.getId(), waitingReservation1.getDate(), waitingReservation1.getTime().getStartAt(), waitingReservation1.getTheme().getName(), "1번째 대기"),
+                new ReservationMineGetWebResponse(waitingReservation2.getId(), waitingReservation2.getDate(), waitingReservation2.getTime().getStartAt(), waitingReservation2.getTheme().getName(), "2번째 대기"),
+                new ReservationMineGetWebResponse(waitingReservation3.getId(), waitingReservation3.getDate(), waitingReservation3.getTime().getStartAt(), waitingReservation3.getTheme().getName(), "3번째 대기")
+        );
+
+        // When & Then
+        assertThat(reservationService.findMyReservations(member.getEmail())).isEqualTo(expected);
     }
 
     @Test

@@ -18,6 +18,7 @@ import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
 import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
+import roomescape.reservation.presentation.dto.response.ReservationMineGetWebResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,6 +51,12 @@ public class ReservationController {
     @GetMapping
     public List<Reservation> findAllReservations() {
         return reservationService.findAllReservations();
+    }
+
+    @NormalLogin
+    @GetMapping("/mine")
+    public List<ReservationMineGetWebResponse> findMyReservations(LoginInfo loginInfo) {
+        return reservationService.findMyReservations(loginInfo.email());
     }
 
     @AdminLogin
