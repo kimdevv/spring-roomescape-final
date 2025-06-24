@@ -152,7 +152,23 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
 
         // When & Then
-        assertThat(reservationService.findAllReservations()).containsExactlyInAnyOrder(reservation);
+        assertThat(reservationService.findReservations(null)).containsExactlyInAnyOrder(reservation);
+    }
+
+    @Test
+    void 특정_상태를_가진_예약만_조회할_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+
+        // When & Then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(reservationService.findReservations(ReservationStatus.RESERVED)).containsExactlyInAnyOrder(reservation);
+            softAssertions.assertThat(reservationService.findReservations(ReservationStatus.WAITING)).containsExactlyInAnyOrder(waitingReservation);
+        });
     }
 
     @Test
@@ -250,13 +266,13 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
         Reservation createdReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        int originalCount = reservationService.findAllReservations().size();
+        int originalCount = reservationService.findReservations(null).size();
 
         // When
         reservationService.cancelReservation(createdReservation.getId());
 
         // Then
-        assertThat(reservationService.findAllReservations().size()).isEqualTo(originalCount - 1);
+        assertThat(reservationService.findReservations(null).size()).isEqualTo(originalCount - 1);
     }
 
     @Test

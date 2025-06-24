@@ -16,6 +16,7 @@ import roomescape.auth.model.LoginInfo;
 import roomescape.reservation.business.ReservationService;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservation.model.ReservationStatus;
 import roomescape.reservation.presentation.dto.request.ReservationCreateByAdminWebRequest;
 import roomescape.reservation.presentation.dto.request.ReservationCreateWebRequest;
 import roomescape.reservation.presentation.dto.response.ReservationMineGetWebResponse;
@@ -49,8 +50,8 @@ public class ReservationController {
 
     @AdminLogin
     @GetMapping
-    public List<Reservation> findAllReservations() {
-        return reservationService.findAllReservations();
+    public List<Reservation> findReservations(@RequestParam(required = false) ReservationStatus status) {
+        return reservationService.findReservations(status);
     }
 
     @NormalLogin

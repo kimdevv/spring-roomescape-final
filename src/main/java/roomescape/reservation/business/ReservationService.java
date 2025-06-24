@@ -76,8 +76,8 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> findAllReservations() {
-        return reservationRepository.findAll();
+    public List<Reservation> findReservations(ReservationStatus status) {
+        return reservationRepository.find(status);
     }
 
     public List<ReservationMineGetWebResponse> findMyReservations(String email) {

@@ -13,6 +13,13 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+    @Query("""
+        SELECT r
+        FROM Reservation  r
+        WHERE (:status IS NULL OR r.status = :status)
+    """)
+    List<Reservation> find(ReservationStatus status);
+
     List<Reservation> findByMemberIdAndStatus(Long memberId, ReservationStatus status);
 
     @Query("""
