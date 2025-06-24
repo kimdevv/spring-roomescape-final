@@ -71,7 +71,7 @@ public class ReservationService {
     }
 
     private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId, ReservationStatus status) {
-        if (status == ReservationStatus.RESERVED && reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (status == ReservationStatus.RESERVED && reservationRepository.existsByDateAndTimeIdAndThemeIdAndStatus(date, timeId, themeId, ReservationStatus.RESERVED)) {
             throw new DuplicatedReservationException("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
         }
     }
@@ -96,6 +96,26 @@ public class ReservationService {
 
     public List<Reservation> findFilteredReservations(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findFiltered(memberId, themeId, startDate, endDate);
+    }
+
+    @Transactional
+    public Reservation applyWaitingReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationDoesNotExistException("존재하지 않는 예약 id입니다."));
+        validateStatusIsWaiting(reservation.getStatus());
+        LocalDate date = reservation.getDate();
+        ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
+        validateDuplicatedDateAndTimeAndTheme(date, time.getId(), theme.getId(), ReservationStatus.RESERVED);
+        reservationRepository.delete(reservation);
+        return reservationRepository.save(new Reservation(reservation.getMember(), date, time, theme, ReservationStatus.RESERVED));
+    }
+
+    private void validateStatusIsWaiting(ReservationStatus status) {
+        if (status == ReservationStatus.WAITING) {
+            return;
+        }
+        throw new IllegalStateException("대기 상태의 예약이 아닙니다.");
     }
 
     @Transactional

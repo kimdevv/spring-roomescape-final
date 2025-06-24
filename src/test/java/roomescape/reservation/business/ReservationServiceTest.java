@@ -260,6 +260,57 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 대기_상태의_예약을_예약_상태로_바꿀_수_있다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+
+        // When
+        Reservation reservedReservation = reservationService.applyWaitingReservation(waitingReservation.getId());
+
+        // Then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(reservedReservation.getId()).isNotNull();
+            softAssertions.assertThat(reservedReservation.getDate()).isEqualTo(waitingReservation.getDate());
+            softAssertions.assertThat(reservedReservation.getTime()).isEqualTo(waitingReservation.getTime());
+            softAssertions.assertThat(reservedReservation.getTheme()).isEqualTo(waitingReservation.getTheme());
+            softAssertions.assertThat(reservedReservation.getMember()).isEqualTo(waitingReservation.getMember());
+            softAssertions.assertThat(reservedReservation.getStatus()).isEqualTo(ReservationStatus.RESERVED);
+        });
+    }
+
+    @Test
+    void 대기_상태가_아닌_예약은_상태를_바꿀_수_없다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        Reservation reservedReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.applyWaitingReservation(reservedReservation.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("대기 상태의 예약이 아닙니다.");
+    }
+
+    @Test
+    void 이미_예약되어_있는_시각의_대기_상태의_예약은_예약_상태로_바꿀_수_없다() {
+        // Given
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
+        Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.applyWaitingReservation(waitingReservation.getId()))
+                .isInstanceOf(DuplicatedReservationException.class)
+                .hasMessage("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
+    }
+
+    @Test
     void 예약을_취소할_수_있다() {
         // Given
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));

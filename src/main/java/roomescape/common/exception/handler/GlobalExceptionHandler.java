@@ -19,6 +19,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage()));
+    }
+
     @ExceptionHandler(BaseCustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(BaseCustomException exception) {
         return ResponseEntity.status(exception.getHttpStatus()).body(new ErrorResponse(exception.getHttpStatus(), exception.getMessage()));

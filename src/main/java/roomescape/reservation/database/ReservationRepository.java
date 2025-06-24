@@ -39,7 +39,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<WaitingReservationWithRankGetResponse> findWaitingReservationsWithRankByMemberId(Long memberId);
 
     @Query(value = """
-        SELECT r 
+        SELECT r
         FROM Reservation r
         WHERE (:memberId IS NULL OR r.member.id = :memberId)
             AND (:themeId IS NULL OR r.theme.id = :themeId)
@@ -47,5 +47,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     """)
     List<Reservation> findFiltered(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate);
 
-    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeIdAndStatus(LocalDate date, Long timeId, Long themeId, ReservationStatus status);
 }
