@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>방탈출 어드민</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
@@ -22,7 +21,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="/reservation">Reservation</a>
+                <a class="nav-link" href="/">Reservation</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/login">Login</a>
@@ -43,22 +42,25 @@
     </div>
 </nav>
 
-<div class="content-container" style="width: 300px;">
-    <h2 class="content-container-title">Login</h2>
-    <form id="login-form">
-        <div class="form-group">
-            <input type="email" class="form-control" id="email" placeholder="Email" required>
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" id="password" placeholder="Password" required>
-        </div>
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-custom" onclick="signup()">Sign Up</button>
-            <button type="button" class="btn btn-custom" onclick="login()">Login</button>
-        </div>
-    </form>
+<div class="content-container">
+    <h2 class="content-container-title">내 예약</h2>
+    <div class="table-container"/>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>테마</th>
+            <th>날짜</th>
+            <th>시간</th>
+            <th>상태</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
 </div>
 
 <script src="/js/user-scripts.js"></script>
+<script src="/js/reservation-mine.js"></script>
 </body>
 </html>

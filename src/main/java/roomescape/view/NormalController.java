@@ -27,4 +27,10 @@ public class NormalController {
     public String normalSignupPage() {
         return "signup";
     }
+
+    @NormalLogin
+    @GetMapping("/reservation/mine")
+    public String normalMyReservationPage() {
+        return "reservation-mine";
+    }
 }
