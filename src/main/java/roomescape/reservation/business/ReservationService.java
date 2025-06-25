@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.database.MemberDoesNotExistException;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
+import roomescape.payment.business.PaymentService;
+import roomescape.payment.business.dto.request.PaymentApplyRequest;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse;
 import roomescape.reservation.database.ReservationRepository;
@@ -32,12 +34,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final PaymentService paymentService;
 
-    public ReservationService(MemberRepository memberRepository, ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(MemberRepository memberRepository, ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, PaymentService paymentService) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.paymentService = paymentService;
     }
 
     public Reservation createReservation(ReservationCreateByAdminWebRequest reservationCreateByAdminWebRequest) {
@@ -56,6 +60,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateRequest reservationCreateRequest) {
+        paymentService.applyPayment(new PaymentApplyRequest(reservationCreateRequest.amount(), reservationCreateRequest.orderId(), reservationCreateRequest.paymentKey()));
         LocalDate date = reservationCreateRequest.date();
         Long timeId = reservationCreateRequest.timeId();
         Long themeId = reservationCreateRequest.themeId();

@@ -16,6 +16,11 @@ public class TestConstant {
     public static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
     public static final LocalTime FUTURE_TIME = LocalTime.now().plusMinutes(2).withNano(0);
 
+    public static final String PAYMENT_KEY = "tgen_20250528175227f6y46";
+    public static final String ORDER_ID = "MC44NjE2MTQzMjcyMzM2";
+    public static final Long PAYMENT_AMOUNT = 1000L;
+    public static final String PAYMENT_TYPE = "NORMAL";
+
     public static final String THEME_NAME = "테마";
     public static final String THEME_DESCRIPTION = "테마의 설명입니다.";
     public static final String THEME_THUMBNAIL = "https://ssl.pstatic.net/melona/libs/1524/1524941/8e44e27eee8d13f9a26b_20250527144532109.jpg";

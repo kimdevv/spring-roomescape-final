@@ -52,7 +52,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE);
 
         // When
         Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
@@ -74,7 +74,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE);
 
         // When
         Reservation createdReservation = reservationService.createReservation(reservationCreateRequest);
@@ -96,10 +96,10 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
-        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED)))
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE)))
                 .isInstanceOf(DuplicatedReservationException.class)
                 .hasMessage("이미 예약되어 있는 시각에는 예약할 수 없습니다.");
     }
@@ -109,7 +109,7 @@ class ReservationServiceTest {
         // Given
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("invalid@email.com", TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("invalid@email.com", TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
@@ -122,7 +122,7 @@ class ReservationServiceTest {
         // Given
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, TestConstant.INVALID_ENTITY_ID, theme.getId(), ReservationStatus.RESERVED);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, TestConstant.INVALID_ENTITY_ID, theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
@@ -135,7 +135,7 @@ class ReservationServiceTest {
         // Given
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
-        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), TestConstant.INVALID_ENTITY_ID, ReservationStatus.RESERVED);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), TestConstant.INVALID_ENTITY_ID, ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.createReservation(reservationCreateRequest))
@@ -149,7 +149,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThat(reservationService.findReservations(null)).containsExactlyInAnyOrder(reservation);
@@ -161,8 +161,8 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -177,10 +177,10 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        Reservation waitingReservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
-        Reservation waitingReservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
-        Reservation waitingReservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation waitingReservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation waitingReservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation waitingReservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
         List<ReservationMineGetWebResponse> expected = List.of(
                 new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약"),
                 new ReservationMineGetWebResponse(waitingReservation1.getId(), waitingReservation1.getDate(), waitingReservation1.getTime().getStartAt(), waitingReservation1.getTheme().getName(), "1번째 대기"),
@@ -199,8 +199,8 @@ class ReservationServiceTest {
         Member member2 = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL2, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME2, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThat(reservationService.findFilteredReservations(member.getId(), null, null, null)).containsExactlyInAnyOrder(reservation);
@@ -212,8 +212,8 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
         Theme theme2 = themeRepository.save(new Theme("다른 테마 이름", "다른 테마 설명", "다른 테마 썸네일 URL"));
-        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId(), ReservationStatus.RESERVED));
+        Reservation reservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThat(reservationService.findFilteredReservations(null, theme.getId(), null, null)).containsExactlyInAnyOrder(reservation);
@@ -224,11 +224,11 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        Reservation reservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        Reservation reservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(4), time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation reservation1 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation reservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation reservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE.plusDays(4), time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThat(reservationService.findFilteredReservations(null, null, TestConstant.FUTURE_DATE, TestConstant.FUTURE_DATE.plusDays(2))).containsExactlyInAnyOrder(reservation1, reservation2, reservation3);
@@ -242,14 +242,14 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme1 = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
         Theme theme2 = themeRepository.save(new Theme("다른 테마 이름", "다른 테마 설명", "다른 테마 썸네일 URL"));
-        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme1.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme2.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme1.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme1.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme2.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme2.getId(), ReservationStatus.RESERVED));
-        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme1.getId(), ReservationStatus.RESERVED));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme1.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme2.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme2.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(1), time.getId(), theme1.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme1.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(2), time.getId(), theme2.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member1.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme2.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        reservationService.createReservation(new ReservationCreateRequest(member2.getEmail(), TestConstant.FUTURE_DATE.plusDays(3), time.getId(), theme1.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -265,7 +265,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When
         Reservation reservedReservation = reservationService.applyWaitingReservation(waitingReservation.getId());
@@ -287,7 +287,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation reservedReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation reservedReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThatThrownBy(() -> reservationService.applyWaitingReservation(reservedReservation.getId()))
@@ -301,8 +301,8 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
-        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING));
+        reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
+        Reservation waitingReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
 
         // When & Then
         assertThatThrownBy(() -> reservationService.applyWaitingReservation(waitingReservation.getId()))
@@ -316,7 +316,7 @@ class ReservationServiceTest {
         Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(TestConstant.FUTURE_TIME));
         Theme theme = themeRepository.save(new Theme(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL));
-        Reservation createdReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED));
+        Reservation createdReservation = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.RESERVED, TestConstant.PAYMENT_KEY, TestConstant.ORDER_ID, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
         int originalCount = reservationService.findReservations(null).size();
 
         // When

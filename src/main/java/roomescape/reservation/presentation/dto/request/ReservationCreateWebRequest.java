@@ -4,12 +4,13 @@ import roomescape.reservation.model.ReservationStatus;
 
 import java.time.LocalDate;
 
-public record ReservationCreateWebRequest(LocalDate date, Long timeId, Long themeId, ReservationStatus status) {
+public record ReservationCreateWebRequest(LocalDate date, Long timeId, Long themeId, ReservationStatus status, String paymentKey, String orderId, Long amount, String paymentType) {
 
     public ReservationCreateWebRequest {
         validateDateTime(date, timeId);
         validateTheme(themeId);
         validateStatus(status);
+        validatePaymentInformation(paymentKey, orderId, amount, paymentType);
     }
 
     private void validateDateTime(LocalDate date, Long timeId) {
@@ -27,6 +28,21 @@ public record ReservationCreateWebRequest(LocalDate date, Long timeId, Long them
     private void validateStatus(ReservationStatus status) {
         if (status == null) {
             throw new IllegalArgumentException("예약상태는 null이 될 수 없습니다.");
+        }
+    }
+
+    private void validatePaymentInformation(String paymentKey, String orderId, Long amount, String paymentType) {
+        if (paymentKey == null || paymentKey.isBlank()) {
+            throw new IllegalArgumentException("결제 키는 빈 값이 될 수 없습니다.");
+        }
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("주문 번호는 빈 값이 될 수 없습니다.");
+        }
+        if (amount == null) {
+            throw new IllegalArgumentException("주문 금액은 null이 될 수 없습니다.");
+        }
+        if (paymentType == null || paymentType.isBlank()) {
+            throw new IllegalArgumentException("주문 종류는 null이 될 수 없습니다.");
         }
     }
 }
