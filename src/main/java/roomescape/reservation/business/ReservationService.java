@@ -7,6 +7,7 @@ import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.payment.business.PaymentService;
 import roomescape.payment.business.dto.request.PaymentApplyRequest;
+import roomescape.payment.model.ProductType;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse;
 import roomescape.reservation.database.ReservationRepository;
@@ -60,7 +61,6 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateRequest reservationCreateRequest) {
-        paymentService.applyPayment(new PaymentApplyRequest(reservationCreateRequest.amount(), reservationCreateRequest.orderId(), reservationCreateRequest.paymentKey()));
         LocalDate date = reservationCreateRequest.date();
         Long timeId = reservationCreateRequest.timeId();
         Long themeId = reservationCreateRequest.themeId();
@@ -72,7 +72,9 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeDoesNotExistException("존재하지 않는 예약시간 id입니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeDoesNotExistException("존재하지 않는 테마 id입니다."));
-        return reservationRepository.save(new Reservation(member, date, time, theme, status));
+        Reservation reservation = reservationRepository.save(new Reservation(member, date, time, theme, status));
+        paymentService.applyPayment(new PaymentApplyRequest(reservationCreateRequest.amount(), reservationCreateRequest.orderId(), reservationCreateRequest.paymentKey(), ProductType.RESERVATION, reservation.getId()));
+        return reservation;
     }
 
     private void validateDuplicatedDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId, ReservationStatus status) {

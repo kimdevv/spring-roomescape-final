@@ -12,6 +12,7 @@ import roomescape.payment.business.dto.request.PaymentApplyRequest;
 import roomescape.payment.business.dto.response.PaymentApproveResponse;
 import roomescape.payment.config.PaymentRestClientConfig;
 import roomescape.payment.exception.PaymentApplyException;
+import roomescape.payment.model.ProductType;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -45,7 +46,7 @@ class PaymentRestClientManagerTest {
                         """, paymentKey, orderId, paymentAmount), MediaType.APPLICATION_JSON));
 
         // When
-        PaymentApproveResponse paymentApproveResponse = paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey));
+        PaymentApproveResponse paymentApproveResponse = paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey, ProductType.RESERVATION, 1L));
 
         // Then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -70,7 +71,7 @@ class PaymentRestClientManagerTest {
                         """));
 
         // When & Then
-        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey)))
+        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey, ProductType.RESERVATION, 1L)))
                 .isInstanceOf(PaymentApplyException.class)
                 .hasMessage("존재하지 않는 결제 입니다.");
     }
@@ -90,7 +91,7 @@ class PaymentRestClientManagerTest {
                         """));
 
         // When & Then
-        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey)))
+        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey, ProductType.RESERVATION, 1L)))
                 .isInstanceOf(PaymentApplyException.class)
                 .hasMessage("결제에 실패했어요. 같은 문제가 반복된다면 은행이나 카드사로 문의해주세요.");
     }
@@ -110,7 +111,7 @@ class PaymentRestClientManagerTest {
                         """));
 
         // When & Then
-        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey)))
+        assertThatThrownBy(() -> paymentRestClientManager.apply(new PaymentApplyRequest(paymentAmount, orderId, paymentKey, ProductType.RESERVATION, 1L)))
                 .isInstanceOf(PaymentApplyException.class)
                 .hasMessage("결제 도중 오류가 발생했습니다.");
     }
