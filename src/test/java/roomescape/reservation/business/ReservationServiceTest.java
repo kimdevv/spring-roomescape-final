@@ -214,10 +214,10 @@ class ReservationServiceTest {
         Reservation waitingReservation2 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY3, TestConstant.ORDER_ID3, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
         Reservation waitingReservation3 = reservationService.createReservation(new ReservationCreateRequest(member.getEmail(), TestConstant.FUTURE_DATE, time.getId(), theme.getId(), ReservationStatus.WAITING, TestConstant.PAYMENT_KEY4, TestConstant.ORDER_ID4, TestConstant.PAYMENT_AMOUNT, TestConstant.PAYMENT_TYPE));
         List<ReservationMineGetWebResponse> expected = List.of(
-                new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약"),
-                new ReservationMineGetWebResponse(waitingReservation1.getId(), waitingReservation1.getDate(), waitingReservation1.getTime().getStartAt(), waitingReservation1.getTheme().getName(), "1번째 대기"),
-                new ReservationMineGetWebResponse(waitingReservation2.getId(), waitingReservation2.getDate(), waitingReservation2.getTime().getStartAt(), waitingReservation2.getTheme().getName(), "2번째 대기"),
-                new ReservationMineGetWebResponse(waitingReservation3.getId(), waitingReservation3.getDate(), waitingReservation3.getTime().getStartAt(), waitingReservation3.getTheme().getName(), "3번째 대기")
+                new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약", TestConstant.PAYMENT_KEY, 1000L),
+                new ReservationMineGetWebResponse(waitingReservation1.getId(), waitingReservation1.getDate(), waitingReservation1.getTime().getStartAt(), waitingReservation1.getTheme().getName(), "1번째 대기", "-", 0L),
+                new ReservationMineGetWebResponse(waitingReservation2.getId(), waitingReservation2.getDate(), waitingReservation2.getTime().getStartAt(), waitingReservation2.getTheme().getName(), "2번째 대기", "-", 0L),
+                new ReservationMineGetWebResponse(waitingReservation3.getId(), waitingReservation3.getDate(), waitingReservation3.getTime().getStartAt(), waitingReservation3.getTheme().getName(), "3번째 대기", "-", 0L)
         );
 
         // When & Then

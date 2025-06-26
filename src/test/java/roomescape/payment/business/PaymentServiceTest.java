@@ -13,7 +13,10 @@ import roomescape.payment.business.dto.request.PaymentApplyRequest;
 import roomescape.payment.business.dto.response.PaymentApproveResponse;
 import roomescape.payment.model.Payment;
 import roomescape.payment.model.ProductType;
+import roomescape.reservation.exception.ReservationDoesNotExistException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -54,5 +57,26 @@ class PaymentServiceTest {
             softAssertions.assertThat(payment.getProductType()).isEqualTo(productType);
             softAssertions.assertThat(payment.getProductId()).isEqualTo(productId);
         });
+    }
+
+    @Test
+    void 예약_id를_통해_결제_레코드를_조회할_수_있다() {
+        // Given
+        Long reservationId = 1L;
+        Payment payment = paymentService.applyPayment(new PaymentApplyRequest(TestConstant.PAYMENT_AMOUNT, TestConstant.ORDER_ID, TestConstant.PAYMENT_KEY, ProductType.RESERVATION, reservationId));
+
+        // When & Then
+        assertThat(paymentService.findPaymentByReservationId(reservationId)).isEqualTo(payment);
+    }
+
+    @Test
+    void 잘못된_예약_id로는_결제_레코드를_조회할_수_없다() {
+        // Given
+        paymentService.applyPayment(new PaymentApplyRequest(TestConstant.PAYMENT_AMOUNT, TestConstant.ORDER_ID, TestConstant.PAYMENT_KEY, ProductType.RESERVATION, 1L));
+
+        // When & Then
+        assertThatThrownBy(() -> paymentService.findPaymentByReservationId(TestConstant.INVALID_ENTITY_ID))
+                .isInstanceOf(ReservationDoesNotExistException.class)
+                .hasMessage("존재하지 않는 예약 id입니다.");
     }
 }

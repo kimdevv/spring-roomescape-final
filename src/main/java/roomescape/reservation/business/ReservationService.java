@@ -7,6 +7,7 @@ import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.payment.business.PaymentService;
 import roomescape.payment.business.dto.request.PaymentApplyRequest;
+import roomescape.payment.model.Payment;
 import roomescape.payment.model.ProductType;
 import roomescape.reservation.business.dto.request.ReservationCreateRequest;
 import roomescape.reservation.business.dto.response.WaitingReservationWithRankGetResponse;
@@ -93,10 +94,13 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByMemberIdAndStatus(member.getId(), ReservationStatus.RESERVED);
         List<WaitingReservationWithRankGetResponse> waitingReservations = reservationRepository.findWaitingReservationsWithRankByMemberId(member.getId());
         List<ReservationMineGetWebResponse> responses = reservations.stream()
-                .map(reservation -> new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약"))
+                .map(reservation -> {
+                    Payment payment = paymentService.findPaymentByReservationId(reservation.getId());
+                    return new ReservationMineGetWebResponse(reservation.getId(), reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getName(), "예약", payment.getPaymentKey(), payment.getAmount());
+                })
                 .collect(Collectors.toList());
         for (WaitingReservationWithRankGetResponse waitingReservation : waitingReservations) {
-            responses.add(new ReservationMineGetWebResponse(waitingReservation.id(), waitingReservation.date(), waitingReservation.time().getStartAt(), waitingReservation.theme().getName(), String.format("%d번째 대기", waitingReservation.rank())));
+            responses.add(new ReservationMineGetWebResponse(waitingReservation.id(), waitingReservation.date(), waitingReservation.time().getStartAt(), waitingReservation.theme().getName(), String.format("%d번째 대기", waitingReservation.rank()), "-", 0L));
         }
         return responses;
     }
