@@ -4,11 +4,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.argumentresolver.LoginInfoResolver;
+import roomescape.common.argumentresolver.LoginInfoResolver;
 import roomescape.auth.business.CookieManager;
 import roomescape.auth.business.JwtProvider;
-import roomescape.auth.interceptor.AdminLoginInterceptor;
-import roomescape.auth.interceptor.NormalLoginInterceptor;
+import roomescape.common.interceptor.AdminLoginInterceptor;
+import roomescape.common.interceptor.LogInterceptor;
+import roomescape.common.interceptor.NormalLoginInterceptor;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new NormalLoginInterceptor(cookieManager));
         registry.addInterceptor(new AdminLoginInterceptor(cookieManager, jwtProvider));
+        registry.addInterceptor(new LogInterceptor());
     }
 
     @Override
