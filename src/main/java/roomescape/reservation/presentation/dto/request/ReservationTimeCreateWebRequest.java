@@ -1,8 +1,10 @@
 package roomescape.reservation.presentation.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalTime;
 
-public record ReservationTimeCreateWebRequest(LocalTime startAt) {
+public record ReservationTimeCreateWebRequest(@Schema(description = "예약시간의 시작 시간") LocalTime startAt) {
 
     public ReservationTimeCreateWebRequest {
         if (startAt == null) {

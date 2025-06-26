@@ -1,6 +1,10 @@
 package roomescape.auth.presentation.dto.request;
 
-public record LoginRequest(String email, String password) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record LoginRequest(
+        @Schema(description = "멤버의 이메일") String email,
+        @Schema(description = "멤버의 비밀번호") String password) {
 
     public LoginRequest {
         if (email == null || email.isBlank()) {

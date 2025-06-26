@@ -1,6 +1,11 @@
 package roomescape.reservation.presentation.dto.request;
 
-public record ThemeCreateWebRequest(String name, String description, String thumbnail) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record ThemeCreateWebRequest(
+        @Schema(description = "테마의 이름") String name,
+        @Schema(description = "테마의 설명") String description,
+        @Schema(description = "테마의 썸네일 이미지 Url") String thumbnail) {
 
     public ThemeCreateWebRequest {
         if (name == null || name.isBlank()) {

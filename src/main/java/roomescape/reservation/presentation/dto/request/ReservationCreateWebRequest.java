@@ -1,10 +1,19 @@
 package roomescape.reservation.presentation.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import roomescape.reservation.model.ReservationStatus;
 
 import java.time.LocalDate;
 
-public record ReservationCreateWebRequest(LocalDate date, Long timeId, Long themeId, ReservationStatus status, String paymentKey, String orderId, Long amount, String paymentType) {
+public record ReservationCreateWebRequest(
+        @Schema(description = "예약할 날짜") LocalDate date,
+        @Schema(description = "예약할 시간의 id") Long timeId,
+        @Schema(description = "예약할 테마의 id") Long themeId,
+        @Schema(description = "예약할 상태") ReservationStatus status,
+        @Schema(description = "예약에 대한 결제 키") String paymentKey,
+        @Schema(description = "예약에 대한 주문 번호") String orderId,
+        @Schema(description = "예약에 대한 결제 금액") Long amount,
+        @Schema(description = "예약에 대한 주문 종류") String paymentType) {
 
     public ReservationCreateWebRequest {
         validateDateTime(date, timeId);

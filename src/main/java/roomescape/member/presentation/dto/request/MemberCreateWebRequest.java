@@ -1,6 +1,11 @@
 package roomescape.member.presentation.dto.request;
 
-public record MemberCreateWebRequest(String email, String password, String name) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record MemberCreateWebRequest(
+        @Schema(description = "멤버의 이메일") String email,
+        @Schema(description = "멤버의 비밀번호") String password,
+        @Schema(description = "멤버의 이름") String name) {
 
     public MemberCreateWebRequest {
         if (email == null || email.isBlank()) {
