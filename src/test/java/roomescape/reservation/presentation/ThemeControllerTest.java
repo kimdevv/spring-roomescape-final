@@ -46,6 +46,20 @@ class ThemeControllerTest {
     }
 
     @Test
+    void 관리자_멤버가_아닌_경우_테마_생성_요청을_보내면_403과_함께_응답한다() {
+        String normalToken = TestFixture.loginAndGetNormalToken();
+        RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .cookie("token", normalToken)
+                    .body(new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL))
+                .when()
+                    .post("/reservations/themes")
+                .then()
+                    .statusCode(403);
+    }
+
+    @Test
     void 모든_테마_조회_요청을_보내고_성공_시_200과_함께_응답한다() {
         String adminToken = TestFixture.loginAndGetAdminToken();
         RestAssured
@@ -90,5 +104,30 @@ class ThemeControllerTest {
                     .delete("/reservations/themes/" + themeGetResponse.id())
                 .then()
                     .statusCode(204);
+    }
+
+    @Test
+    void 관리자_멤버가_아닌_경우_테마_삭제_요청을_보내면_403과_함께_응답한다() {
+        String adminToken = TestFixture.loginAndGetAdminToken();
+        ThemeGetResponse themeGetResponse = RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .cookie("token", adminToken)
+                    .body(new ThemeCreateWebRequest(TestConstant.THEME_NAME, TestConstant.THEME_DESCRIPTION, TestConstant.THEME_THUMBNAIL))
+                .when()
+                    .post("/reservations/themes")
+                .then()
+                    .statusCode(201)
+                .extract()
+                    .body().as(ThemeGetResponse.class);
+
+        String normalToken = TestFixture.loginAndGetNormalToken();
+        RestAssured
+                .given()
+                    .cookie("token", normalToken)
+                .when()
+                    .delete("/reservations/themes/" + themeGetResponse.id())
+                .then()
+                    .statusCode(403);
     }
 }
