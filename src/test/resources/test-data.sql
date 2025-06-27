@@ -1,0 +1,2 @@
+INSERT INTO member(email, password, name, role) VALUES('admin@admin.com', 'admin_password', '관리자', 'ADMIN');
+INSERT INTO member(email, password, name, role) VALUES('normal@normal.com', 'normal_password', '일반인', 'NORMAL');
