@@ -2,7 +2,7 @@ package roomescape.auth.business;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.presentation.dto.request.LoginRequest;
-import roomescape.member.database.MemberDoesNotExistException;
+import roomescape.member.exception.MemberDoesNotExistException;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 

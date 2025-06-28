@@ -2,7 +2,7 @@ package roomescape.reservation.business;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.member.database.MemberDoesNotExistException;
+import roomescape.member.exception.MemberDoesNotExistException;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.payment.business.PaymentService;

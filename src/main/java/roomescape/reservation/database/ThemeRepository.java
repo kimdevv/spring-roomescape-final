@@ -8,9 +8,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.model.Theme;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ThemeRepository extends JpaRepository<Theme, Long> {
+
+    List<Theme> findAll();
 
     @Query(value = """
         SELECT t

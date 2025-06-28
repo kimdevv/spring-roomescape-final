@@ -1,4 +1,4 @@
-package roomescape.member.database;
+package roomescape.member.exception;
 
 import roomescape.common.exception.EntityDoesNotExistsException;
 

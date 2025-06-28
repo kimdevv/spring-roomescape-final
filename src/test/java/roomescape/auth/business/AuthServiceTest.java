@@ -8,7 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.TestConstant;
 import roomescape.auth.presentation.dto.request.LoginRequest;
-import roomescape.member.database.MemberDoesNotExistException;
+import roomescape.member.exception.MemberDoesNotExistException;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.model.Member;
 import roomescape.member.model.Role;

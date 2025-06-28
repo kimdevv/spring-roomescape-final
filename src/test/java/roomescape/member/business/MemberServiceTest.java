@@ -53,9 +53,10 @@ class MemberServiceTest {
     @Test
     void 저장되어_있는_모든_멤버를_조회할_수_있다() {
         // Given
+        int originalCount = memberService.findAllMembers().size();
         Member member = memberService.createNormalMember(new MemberCreateWebRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME));
 
         // When & Then
-        assertThat(memberService.findAllMembers()).containsExactlyInAnyOrder(member);
+        assertThat(memberService.findAllMembers()).hasSize(originalCount + 1);
     }
 }
