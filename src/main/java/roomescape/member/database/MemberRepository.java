@@ -14,7 +14,5 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
 
     Optional<Member> findByEmail(String email);
 
-    Optional<Member> findByEmailAndPassword(String email, String password);
-
     boolean existsByEmail(String email);
 }

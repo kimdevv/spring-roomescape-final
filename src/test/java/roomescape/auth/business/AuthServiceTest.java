@@ -30,14 +30,17 @@ class AuthServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @MockitoBean
     private JwtProvider jwtProvider;
 
     @Test
     void 로그인_성공_시_토큰을_만들어_반환한다() {
         // Given
-        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD, TestConstant.MEMBER_NAME, Role.NORMAL));
-        LoginRequest loginRequest = new LoginRequest(member.getEmail(), member.getPassword());
+        Member member = memberRepository.save(new Member(TestConstant.MEMBER_EMAIL, passwordEncoder.encode(TestConstant.MEMBER_PASSWORD), TestConstant.MEMBER_NAME, Role.NORMAL));
+        LoginRequest loginRequest = new LoginRequest(TestConstant.MEMBER_EMAIL, TestConstant.MEMBER_PASSWORD);
         when(jwtProvider.generateToken(anyString(), any())).thenReturn(TestConstant.FAKE_TOKEN);
 
         // When

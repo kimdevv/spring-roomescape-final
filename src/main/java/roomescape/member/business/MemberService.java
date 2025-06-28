@@ -1,6 +1,7 @@
 package roomescape.member.business;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.business.PasswordEncoder;
 import roomescape.member.database.MemberRepository;
 import roomescape.member.exception.DuplicatedMemberException;
 import roomescape.member.model.Member;
@@ -13,15 +14,18 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Member createNormalMember(MemberCreateWebRequest memberCreateWebRequest) {
         String email = memberCreateWebRequest.email();
         validateDuplicatedEmail(email);
-        return memberRepository.save(new Member(email, memberCreateWebRequest.password(), memberCreateWebRequest.name(), Role.NORMAL));
+        String encryptedPassword = passwordEncoder.encode(memberCreateWebRequest.password());
+        return memberRepository.save(new Member(email, encryptedPassword, memberCreateWebRequest.name(), Role.NORMAL));
     }
 
     private void validateDuplicatedEmail(String email) {

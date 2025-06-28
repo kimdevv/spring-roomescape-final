@@ -1,2 +1,2 @@
-INSERT INTO member(email, password, name, role) VALUES('admin@admin.com', 'admin_password', '관리자', 'ADMIN');
-INSERT INTO member(email, password, name, role) VALUES('normal@normal.com', 'normal_password', '일반인', 'NORMAL');
+INSERT INTO member(email, password, name, role) VALUES('admin@admin.com', '$2a$10$6rw2g2N/K9DjIO1Xfru6EuJdEK16Nf4vwN7WlwFMTyK7TSDe.cfTG', '관리자', 'ADMIN');
+INSERT INTO member(email, password, name, role) VALUES('normal@normal.com', '$2a$10$H4lKSr3Ay/fEQex.sV0TZOxNZbDnC1IR4VzNFcWMxcl6OimDZ8u1K', '일반인', 'NORMAL');

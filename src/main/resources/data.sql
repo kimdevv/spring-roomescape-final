@@ -7,5 +7,5 @@ INSERT INTO theme(id, name, description, thumbnail) VALUES(1, '아침', '아침 
 INSERT INTO theme(id, name, description, thumbnail) VALUES(2, '점심', '점심 방탈출입니다.', 'https://img.freepik.com/free-photo/blue-sky-clouds_1417-1874.jpg');
 INSERT INTO theme(id, name, description, thumbnail) VALUES(3, '저녁', '저녁 방탈출입니다.', 'https://richlucky0416.com/wp-content/uploads/2023/12/%EC%95%84%EC%B9%A8.jpg');
 
-INSERT into member(id, email, password, name, role) VALUES(1, 'admin@admin.com', 'adad', '관리자', 'ADMIN');
-INSERT into member(id, email, password, name, role) VALUES(2, 'normal@normal.com', 'adad', '일반인', 'NORMAL');
+INSERT into member(id, email, password, name, role) VALUES(1, 'admin@admin.com', '$2a$10$eZJXzT/Kz5eHPHen.vOMcuBlbe2OK1VDIu2EpOJd/QyiUxZXjRBCy', '관리자', 'ADMIN');
+INSERT into member(id, email, password, name, role) VALUES(2, 'normal@normal.com', '$2a$10$eZJXzT/Kz5eHPHen.vOMcuBlbe2OK1VDIu2EpOJd/QyiUxZXjRBCy', '일반인', 'NORMAL');

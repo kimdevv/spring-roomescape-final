@@ -34,7 +34,6 @@ class MemberServiceTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(member.getId()).isNotNull();
             softAssertions.assertThat(member.getEmail()).isEqualTo(TestConstant.MEMBER_EMAIL);
-            softAssertions.assertThat(member.getPassword()).isEqualTo(TestConstant.MEMBER_PASSWORD);
             softAssertions.assertThat(member.getName()).isEqualTo(TestConstant.MEMBER_NAME);
         });
     }
